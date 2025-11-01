@@ -1,0 +1,2321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wave Portal — Manager Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg: #0f1115;
+            --glass-weak: rgba(255,255,255,0.02);
+            --glass: rgba(255,255,255,0.04);
+            --glass-strong: rgba(255,255,255,0.06);
+            --muted: rgba(255,255,255,0.65);
+            --accent: #00d4ff;
+            --accent-2: #6a5cff;
+            --accent-soft: rgba(0,212,255,0.08);
+            --success: #28c76f;
+            --warning: #ffb020;
+            --danger: #ff6b6b;
+            --card-radius: 14px;
+            --glass-border: rgba(255,255,255,0.06);
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, "Helvetica Neue", Arial;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: radial-gradient(1200px 600px at 10% 10%, rgba(106,92,255,0.04), transparent 8%),
+                        radial-gradient(800px 500px at 90% 80%, rgba(0,212,255,0.02), transparent 10%),
+                        var(--bg);
+            color: #e9eef8;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            overflow-x: hidden;
+        }
+
+        .wrap {
+            display: flex;
+            min-height: 100vh;
+            gap: 28px;
+            padding: 28px;
+        }
+
+        .sidebar {
+            width: 260px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+            border: 1px solid var(--glass-border);
+            border-radius: 18px;
+            padding: 20px;
+            backdrop-filter: blur(8px) saturate(120%);
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            align-items: stretch;
+            box-shadow: 0 8px 30px rgba(2,6,23,0.6) inset;
+            transition: all 0.3s ease;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+
+        .brand .logo {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: #041025;
+            box-shadow: 0 6px 18px rgba(106,92,255,0.12);
+            overflow: hidden;
+        }
+
+        .brand .logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .brand h2 {
+            font-size: 18px;
+            margin: 0;
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .nav {
+            display: flex;
+            flex-direction: column;
+            margin-top: 8px;
+            gap: 8px;
+        }
+
+        .nav button {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 14px;
+            border-radius: 12px;
+            border: none;
+            background: transparent;
+            color: var(--muted);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            font-size: 14px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav button i {
+            width: 18px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .nav button:hover {
+            color: #fff;
+            transform: translateX(6px);
+            background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+            box-shadow: 0 8px 30px rgba(0,0,0,0.35);
+        }
+
+        .nav button:hover i {
+            transform: scale(1.2);
+            color: var(--accent);
+        }
+
+        .nav button.active {
+            background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+            color: #fff;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.35);
+        }
+
+        .nav button.active i {
+            color: var(--accent);
+            text-shadow: 0 0 10px var(--accent);
+        }
+
+        .nav button::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .nav button:hover::after {
+            left: 100%;
+        }
+
+        .sidebar .footer {
+            margin-top: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .logout {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px;
+            border-radius: 12px;
+            background: linear-gradient(90deg, var(--accent-soft), var(--accent-2));
+            border: none;
+            color: #e9f6ff;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(106,92,255,0.2);
+        }
+
+        .logout:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(106,92,255,0.4);
+        }
+
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        header.main-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 18px;
+            padding: 10px 0;
+        }
+
+        .title {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .title h1 {
+            margin: 0;
+            font-size: 24px;
+            color: #eaf6ff;
+            font-weight: 700;
+            text-shadow: 0 0 10px rgba(0,212,255,0.3);
+        }
+
+        .title p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .top-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .profile-switcher {
+            position: relative;
+            display: inline-block;
+        }
+
+        .profile-switcher-btn {
+            background: linear-gradient(90deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+            border: 1px solid rgba(255,255,255,0.06);
+            padding: 10px 14px;
+            border-radius: 10px;
+            color: var(--muted);
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .profile-switcher-btn:hover {
+            color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+            border-color: rgba(0,212,255,0.3);
+        }
+
+        .profile-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 8px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 12px;
+            padding: 8px;
+            min-width: 200px;
+            box-shadow: 0 10px 30px rgba(2,6,23,0.6);
+            backdrop-filter: blur(8px) saturate(120%);
+            z-index: 1000;
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .profile-dropdown.show {
+            display: block;
+        }
+
+        .profile-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: var(--muted);
+        }
+
+        .profile-option:hover {
+            background: linear-gradient(90deg, rgba(0,212,255,0.08), rgba(106,92,255,0.04));
+            color: #fff;
+            transform: translateX(5px);
+        }
+
+        .profile-option.active {
+            background: linear-gradient(90deg, rgba(0,212,255,0.12), rgba(106,92,255,0.06));
+            color: #fff;
+        }
+
+        .profile-option i {
+            width: 16px;
+            text-align: center;
+        }
+
+        .cards {
+            display: flex;
+            gap: 14px;
+            justify-content: center;
+            flex-wrap: wrap;
+            padding: 18px 0;
+        }
+
+        .card {
+            min-width: 200px;
+            width: 1fr;
+            flex: 1 1 260px;
+            max-width: 320px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.018), rgba(255,255,255,0.01));
+            border-radius: var(--card-radius);
+            padding: 20px;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 6px 26px rgba(2,6,23,0.6);
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 8px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(6px) saturate(120%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(0,212,255,0.05), rgba(106,92,255,0.05));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .card:hover::before {
+            opacity: 1;
+        }
+
+        .card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 18px 50px rgba(0,0,0,0.55), 0 0 20px rgba(0,212,255,0.1);
+            border-color: rgba(0,212,255,0.2);
+        }
+
+        .card .k {
+            font-size: 32px;
+            font-weight: 700;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(0,212,255,0.5);
+        }
+
+        .card .t {
+            font-size: 14px;
+            color: var(--muted);
+        }
+
+        .panel-wrap {
+            background: linear-gradient(180deg, rgba(255,255,255,0.012), rgba(255,255,255,0.008));
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid var(--glass-border);
+            min-height: 420px;
+            box-shadow: 0 12px 40px rgba(2,6,23,0.6);
+            transition: all 0.3s ease;
+        }
+
+        .panel-wrap:hover {
+            box-shadow: 0 15px 50px rgba(2,6,23,0.8);
+        }
+
+        .panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .panel-header h3 {
+            margin: 0;
+            color: #fff;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .table-shell {
+            background: linear-gradient(180deg, rgba(255,255,255,0.006), rgba(255,255,255,0.004));
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.03);
+            transition: all 0.3s ease;
+        }
+
+        .table-shell:hover {
+            border-color: rgba(255,255,255,0.05);
+        }
+
+        .table-tools {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+
+        .search {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .search input {
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.04);
+            padding: 10px 14px;
+            border-radius: 10px;
+            color: #dfefff;
+            min-width: 220px;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .search input:focus {
+            outline: none;
+            border-color: rgba(0,212,255,0.3);
+            box-shadow: 0 0 10px rgba(0,212,255,0.1);
+        }
+
+        .select-page {
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.04);
+            padding: 10px;
+            border-radius: 10px;
+            color: #dfefff;
+            transition: all 0.3s ease;
+        }
+
+        .select-page:focus {
+            outline: none;
+            border-color: rgba(0,212,255,0.3);
+        }
+
+        table.app-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 720px;
+        }
+
+        table.app-table thead th {
+            font-weight: 600;
+            padding: 14px 12px;
+            background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+            color: #cfefff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        table.app-table thead th:hover {
+            background: linear-gradient(90deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
+            color: #fff;
+        }
+
+        table.app-table thead th i {
+            margin-right: 6px;
+            transition: all 0.3s ease;
+        }
+
+        table.app-table thead th:hover i {
+            color: var(--accent);
+        }
+
+        table.app-table tbody td {
+            padding: 14px 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.02);
+            color: #dbeeff;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        table.app-table tbody tr {
+            transition: all 0.3s ease;
+        }
+
+        table.app-table tbody tr:hover {
+            background: linear-gradient(90deg, rgba(0,212,255,0.02), rgba(106,92,255,0.02));
+            transform: translateX(6px) scale(1.01);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .badge {
+            padding: 6px 12px;
+            border-radius: 999px;
+            font-weight: 700;
+            font-size: 12px;
+            color: #041025;
+            transition: all 0.3s ease;
+        }
+
+        .badge:hover {
+            transform: scale(1.05);
+        }
+
+        .badge.live {
+            background: linear-gradient(90deg, var(--accent), var(--accent-2));
+            box-shadow: 0 4px 10px rgba(0,212,255,0.3);
+        }
+
+        .badge.pending {
+            background: var(--warning);
+            color: #0b0b0b;
+            box-shadow: 0 4px 10px rgba(255,176,32,0.3);
+        }
+
+        .badge.completed {
+            background: var(--success);
+            color: #02210a;
+            box-shadow: 0 4px 10px rgba(40,199,111,0.3);
+        }
+
+        .badge.blocked {
+            background: var(--danger);
+            color: #fff;
+            box-shadow: 0 4px 10px rgba(255,107,107,0.3);
+        }
+
+        .btn {
+            padding: 10px 14px;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .btn:hover::after {
+            left: 100%;
+        }
+
+        .btn i {
+            width: 14px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover i {
+            transform: scale(1.2);
+        }
+
+        .btn.edit {
+            background: linear-gradient(90deg, rgba(0,212,255,0.14), rgba(106,92,255,0.06));
+            color: var(--accent);
+            box-shadow: 0 6px 18px rgba(0,212,255,0.04);
+        }
+
+        .btn.edit:hover {
+            background: linear-gradient(90deg, rgba(0,212,255,0.2), rgba(106,92,255,0.1));
+            color: #fff;
+            box-shadow: 0 8px 25px rgba(0,212,255,0.2);
+            transform: translateY(-3px);
+        }
+
+        .btn.del {
+            background: linear-gradient(90deg, rgba(255,107,107,0.08), rgba(255,107,107,0.03));
+            color: var(--danger);
+        }
+
+        .btn.del:hover {
+            background: linear-gradient(90deg, rgba(255,107,107,0.15), rgba(255,107,107,0.08));
+            color: #fff;
+            box-shadow: 0 8px 25px rgba(255,107,107,0.2);
+            transform: translateY(-3px);
+        }
+
+        .btn.admin {
+            background: linear-gradient(90deg, rgba(40,199,111,0.12), rgba(40,199,111,0.04));
+            color: var(--success);
+        }
+
+        .btn.admin:hover {
+            background: linear-gradient(90deg, rgba(40,199,111,0.2), rgba(40,199,111,0.1));
+            color: #fff;
+            box-shadow: 0 8px 25px rgba(40,199,111,0.2);
+            transform: translateY(-3px);
+        }
+
+        .btn.member {
+            background: linear-gradient(90deg, rgba(255,176,32,0.12), rgba(255,176,32,0.04));
+            color: var(--warning);
+        }
+
+        .btn.member:hover {
+            background: linear-gradient(90deg, rgba(255,176,32,0.2), rgba(255,176,32,0.1));
+            color: #fff;
+            box-shadow: 0 8px 25px rgba(255,176,32,0.2);
+            transform: translateY(-3px);
+        }
+
+        .btn.view {
+            background: linear-gradient(90deg, rgba(106,92,255,0.12), rgba(106,92,255,0.04));
+            color: var(--accent-2);
+        }
+
+        .btn.view:hover {
+            background: linear-gradient(90deg, rgba(106,92,255,0.2), rgba(106,92,255,0.1));
+            color: #fff;
+            box-shadow: 0 8px 25px rgba(106,92,255,0.2);
+            transform: translateY(-3px);
+        }
+
+        .btn.accept {
+            background: linear-gradient(90deg, rgba(40,199,111,0.12), rgba(40,199,111,0.04));
+            color: var(--success);
+        }
+
+        .btn.accept:hover {
+            background: linear-gradient(90deg, rgba(40,199,111,0.2), rgba(40,199,111,0.1));
+            color: #fff;
+            box-shadow: 0 8px 25px rgba(40,199,111,0.2);
+            transform: translateY(-3px);
+        }
+
+        .btn.reject {
+            background: linear-gradient(90deg, rgba(255,107,107,0.12), rgba(255,107,107,0.04));
+            color: var(--danger);
+        }
+
+        .btn.reject:hover {
+            background: linear-gradient(90deg, rgba(255,107,107,0.2), rgba(255,107,107,0.1));
+            color: #fff;
+            box-shadow: 0 8px 25px rgba(255,107,107,0.2);
+            transform: translateY(-3px);
+        }
+
+        .add-prominent {
+            background: linear-gradient(90deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+            border: 1px solid rgba(255,255,255,0.06);
+            padding: 12px 16px;
+            border-radius: 12px;
+            color: #eaf6ff;
+            font-weight: 800;
+            box-shadow: 0 10px 30px rgba(12,18,28,0.6);
+            backdrop-filter: blur(8px) saturate(120%);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .add-prominent:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(12,18,28,0.8), 0 0 20px rgba(0,212,255,0.2);
+            border-color: rgba(0,212,255,0.3);
+        }
+
+        .add-prominent i {
+            margin-right: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .add-prominent:hover i {
+            transform: scale(1.2);
+            color: var(--accent);
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .avatar:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 15px rgba(0,212,255,0.5);
+        }
+
+        .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .pagination {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            justify-content: flex-end;
+            margin-top: 15px;
+        }
+
+        .page-btn {
+            padding: 8px 12px;
+            border-radius: 8px;
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.03);
+            color: var(--muted);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .page-btn:hover {
+            background: linear-gradient(90deg, rgba(0,212,255,0.06), rgba(106,92,255,0.04));
+            color: #fff;
+            transform: translateY(-2px);
+        }
+
+        .page-btn.active {
+            background: linear-gradient(90deg, rgba(0,212,255,0.06), rgba(106,92,255,0.04));
+            color: #fff;
+            box-shadow: 0 4px 10px rgba(0,212,255,0.2);
+        }
+
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(rgba(2,6,23,0.7), rgba(2,6,23,0.7));
+            z-index: 1200;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-card {
+            width: 520px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid rgba(255,255,255,0.03);
+            box-shadow: 0 12px 40px rgba(2,6,23,0.6);
+            animation: scaleIn 0.3s ease;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        @keyframes scaleIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .modal-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-top: 12px;
+        }
+
+        .modal-row input, .modal-row select, .modal-row textarea {
+            flex: 1;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.04);
+            background: transparent;
+            color: #dfefff;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .modal-row input:focus, .modal-row select:focus, .modal-row textarea:focus {
+            outline: none;
+            border-color: rgba(0,212,255,0.3);
+            box-shadow: 0 0 10px rgba(0,212,255,0.1);
+        }
+
+        .modal-card.prominent {
+            background: linear-gradient(180deg, rgba(255,255,255,0.032), rgba(255,255,255,0.014));
+            box-shadow: 0 18px 56px rgba(0,0,0,0.6);
+            border: 1px solid rgba(255,255,255,0.06);
+            backdrop-filter: blur(10px) saturate(130%);
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(90deg, var(--accent-soft), rgba(106,92,255,0.06));
+            color: #fff;
+            padding: 12px 18px;
+            border-radius: 10px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+            z-index: 10000;
+            font-weight: 600;
+            backdrop-filter: blur(8px) saturate(120%);
+            border: 1px solid rgba(255,255,255,0.06);
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* Form field enhancements */
+        .form-group {
+            margin-bottom: 16px;
+            position: relative;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 6px;
+            color: var(--muted);
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.04);
+            background: transparent;
+            color: #dfefff;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: rgba(0,212,255,0.3);
+            box-shadow: 0 0 15px rgba(0,212,255,0.1);
+            transform: translateY(-2px);
+        }
+
+        .form-input:hover {
+            border-color: rgba(255,255,255,0.08);
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.04);
+            background: transparent;
+            color: #dfefff;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .form-select:focus {
+            outline: none;
+            border-color: rgba(0,212,255,0.3);
+            box-shadow: 0 0 15px rgba(0,212,255,0.1);
+            transform: translateY(-2px);
+        }
+
+        .form-textarea {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.04);
+            background: transparent;
+            color: #dfefff;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-textarea:focus {
+            outline: none;
+            border-color: rgba(0,212,255,0.3);
+            box-shadow: 0 0 15px rgba(0,212,255,0.1);
+            transform: translateY(-2px);
+        }
+
+        .form-section {
+            margin-bottom: 24px;
+            padding: 16px;
+            border-radius: 12px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005));
+            border: 1px solid rgba(255,255,255,0.03);
+            transition: all 0.3s ease;
+        }
+
+        .form-section:hover {
+            border-color: rgba(255,255,255,0.05);
+            transform: translateY(-2px);
+        }
+
+        .form-section-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-section-title i {
+            color: var(--accent);
+        }
+
+        /* Live Count Cards */
+        .live-count-card {
+            background: linear-gradient(135deg, rgba(0,212,255,0.08), rgba(106,92,255,0.08));
+            border-radius: var(--card-radius);
+            padding: 20px;
+            border: 1px solid rgba(0,212,255,0.2);
+            box-shadow: 0 8px 30px rgba(0,212,255,0.15);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(6px) saturate(120%);
+            position: relative;
+            overflow: hidden;
+            min-width: 200px;
+            margin-bottom: 20px;
+        }
+
+        .live-count-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(0,212,255,0.1), rgba(106,92,255,0.1));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .live-count-card:hover::before {
+            opacity: 1;
+        }
+
+        .live-count-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 18px 50px rgba(0,212,255,0.25), 0 0 20px rgba(0,212,255,0.2);
+            border-color: rgba(0,212,255,0.4);
+        }
+
+        .live-count-card .count {
+            font-size: 42px;
+            font-weight: 800;
+            color: #fff;
+            text-shadow: 0 0 15px rgba(0,212,255,0.7);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .live-count-card .label {
+            font-size: 16px;
+            color: #fff;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .live-count-card .sub-label {
+            font-size: 12px;
+            color: rgba(255,255,255,0.7);
+            text-align: center;
+        }
+
+        .live-count-card .icon {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: rgba(255,255,255,0.9);
+        }
+
+        /* Work History Table in Profile Modal */
+        .work-history-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 13px;
+        }
+
+        .work-history-table th {
+            background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+            padding: 10px 8px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+            color: #cfefff;
+            font-weight: 600;
+        }
+
+        .work-history-table td {
+            padding: 10px 8px;
+            border-bottom: 1px solid rgba(255,255,255,0.02);
+            color: #dbeeff;
+        }
+
+        .work-history-table tr:hover {
+            background: linear-gradient(90deg, rgba(0,212,255,0.02), rgba(106,92,255,0.02));
+        }
+
+        @media (max-width: 1100px) {
+            .wrap {
+                padding: 18px;
+            }
+            .sidebar {
+                display: none;
+            }
+            .main {
+                padding: 0;
+            }
+            .modal-card {
+                width: 92%;
+            }
+        }
+
+        @media (max-width: 760px) {
+            .cards {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .table-shell {
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="wrap">
+        <!-- Sidebar -->
+        <aside class="sidebar" role="navigation">
+            <div class="brand">
+                <div class="logo">
+                    <img src="https://i.pravatar.cc/80?img=8" alt="Manager Profile">
+                </div>
+                <div>
+                    <h2>Wave Portal</h2>
+                    <div style="font-size:12px;color:var(--muted)"><i class="fas fa-user-tie"></i> Manager</div>
+                </div>
+            </div>
+
+            <nav class="nav" aria-label="Main navigation">
+                <button class="active" data-target="dashboardPanel" onclick="switchPanel(event)"><i class="fas fa-tachometer-alt"></i> Dashboard</button>
+                <button data-target="teamMembersPanel" onclick="switchPanel(event)"><i class="fas fa-users"></i> Team Members</button>
+                <button data-target="addProjectPanel" onclick="switchPanel(event)"><i class="fas fa-plus-circle"></i> Add Project</button>
+                <button data-target="availableProjectsPanel" onclick="switchPanel(event)"><i class="fas fa-project-diagram"></i> Available Projects</button>
+                <button data-target="myProjectsPanel" onclick="switchPanel(event)"><i class="fas fa-tasks"></i> My Projects</button>
+                <button data-target="paymentsPanel" onclick="switchPanel(event)"><i class="fas fa-credit-card"></i> Payment History</button>
+                <button data-target="profilePanel" onclick="switchPanel(event)"><i class="fas fa-user"></i> Profile</button>
+            </nav>
+
+            <div class="footer">
+                <div style="font-size:13px;color:var(--muted)">Signed in as</div>
+                <div style="font-weight:700"><i class="fas fa-user-tie"></i> Alice K • Manager</div>
+                <div style="height:12px"></div>
+                <button class="logout" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Log Out</button>
+            </div>
+        </aside>
+
+        <!-- Main -->
+        <main class="main">
+            <header class="main-header">
+                <div class="title">
+                    <h1>Manager Dashboard</h1>
+                    <p class="muted">Manage your team, projects, and payments</p>
+                </div>
+                <div class="top-actions">
+                    <div class="profile-switcher">
+                        <button class="profile-switcher-btn" onclick="toggleProfileDropdown()">
+                            <i class="fas fa-user-tie"></i> Switch Profile <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <div class="profile-dropdown" id="profileDropdown">
+                            <div class="profile-option" data-profile="admin" onclick="switchProfile('admin')">
+                                <i class="fas fa-user-shield"></i> Admin Dashboard
+                            </div>
+                            <div class="profile-option active" data-profile="manager" onclick="switchProfile('manager')">
+                                <i class="fas fa-user-tie"></i> Manager Dashboard
+                            </div>
+                            <div class="profile-option" data-profile="member" onclick="switchProfile('member')">
+                                <i class="fas fa-user"></i> Member Dashboard
+                            </div>
+                        </div>
+                    </div>
+                    <div class="muted"><i class="fas fa-moon"></i> Dark frosted glass</div>
+                </div>
+            </header>
+
+            <!-- Cards (only visible on dashboard panel) -->
+            <section class="cards" id="cardsRow">
+                <div class="card" id="cardTeam"><div class="k" id="kTeam">0</div><div class="t"><i class="fas fa-users"></i> Team Members</div></div>
+                <div class="card" id="cardActiveProjects"><div class="k" id="kActiveProjects">0</div><div class="t"><i class="fas fa-tasks"></i> Active Projects</div></div>
+                <div class="card" id="cardCompleted"><div class="k" id="kCompleted">0</div><div class="t"><i class="fas fa-check-circle"></i> Completed</div></div>
+                <div class="card" id="cardEarnings"><div class="k" id="kEarnings">$0</div><div class="t"><i class="fas fa-dollar-sign"></i> Total Earnings</div></div>
+            </section>
+
+            <section class="panel-wrap">
+                <!-- Dashboard panel: recent activity table -->
+                <section class="panel show" id="dashboardPanel" style="display:block">
+                    <div class="panel-header">
+                        <h3><i class="fas fa-history"></i> Recent Activity</h3>
+                        <div class="controls muted"><i class="fas fa-bolt"></i> Live updates</div>
+                    </div>
+
+                    <div class="table-shell">
+                        <div class="table-tools" style="margin-bottom:8px">
+                            <div class="search"><input placeholder="Search activity..." id="activitySearch" oninput="renderActivityTable()" /></div>
+                            <div style="display:flex;gap:8px;align-items:center">
+                                <div class="muted"><i class="fas fa-eye"></i> Showing latest 20</div>
+                            </div>
+                        </div>
+
+                        <table class="app-table" id="activityTable">
+                            <thead>
+                                <tr>
+                                    <th><i class="fas fa-clock"></i> When</th>
+                                    <th><i class="fas fa-list"></i> Activity</th>
+                                    <th><i class="fas fa-tag"></i> Type</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- Team Members panel -->
+                <section class="panel" id="teamMembersPanel" style="display:none">
+                    <div class="panel-header">
+                        <h3><i class="fas fa-users"></i> Team Members</h3>
+                        <div class="controls muted">Manage your team members</div>
+                    </div>
+
+                    <!-- Live Team Member Count Card -->
+                    <div class="live-count-card">
+                        <div class="icon"><i class="fas fa-users"></i></div>
+                        <div class="count" id="liveTeamCount">0</div>
+                        <div class="label">Team Members</div>
+                        <div class="sub-label">Active and working</div>
+                    </div>
+
+                    <div class="table-shell">
+                        <div class="table-tools" style="margin-bottom:10px">
+                            <div class="search"><input placeholder="Search team members..." data-table="teamMembersTable" oninput="tableSearch(event)"></div>
+
+                            <select id="teamSpecializationFilter" class="select-page" onchange="applyTableFilter('teamMembersTable','specialization', this.value)">
+                                <option value="">All specializations</option>
+                                <option value="Web Developer">Web Developer</option>
+                                <option value="Graphic Designer">Graphic Designer</option>
+                                <option value="SEO Expert">SEO Expert</option>
+                                <option value="Digital Marketer">Digital Marketer</option>
+                                <option value="Content Writer">Content Writer</option>
+                            </select>
+
+                            <select id="teamStatusFilter" class="select-page" onchange="applyTableFilter('teamMembersTable','status', this.value)">
+                                <option value="">All status</option>
+                                <option value="active">Active</option>
+                                <option value="inactive">Inactive</option>
+                            </select>
+
+                            <select class="select-page" data-table="teamMembersTable" onchange="tablePageSizeChange(event)">
+                                <option value="5">5 / page</option><option value="10" selected>10 / page</option><option value="25">25 / page</option>
+                            </select>
+                        </div>
+
+                        <table class="app-table" id="teamMembersTable">
+                            <thead><tr data-table="teamMembersTable">
+                                <th data-col="avatar"><i class="fas fa-image"></i> Picture</th>
+                                <th data-col="name"><i class="fas fa-user"></i> Name</th>
+                                <th data-col="email"><i class="fas fa-envelope"></i> Email</th>
+                                <th data-col="specialization"><i class="fas fa-tools"></i> Specialization</th>
+                                <th data-col="status"><i class="fas fa-circle"></i> Status</th>
+                                <th data-col="actions"><i class="fas fa-ellipsis-h"></i> Actions</th>
+                            </tr></thead>
+                            <tbody></tbody>
+                        </table>
+                        <div class="pagination" data-table="teamMembersTable"></div>
+                    </div>
+                </section>
+
+                <!-- Add Project panel -->
+                <section class="panel" id="addProjectPanel" style="display:none">
+                    <div class="panel-header">
+                        <h3><i class="fas fa-plus-circle"></i> Add New Project</h3>
+                        <div class="controls muted">Fill in project details below</div>
+                    </div>
+
+                    <div class="form-section">
+                        <div class="form-section-title"><i class="fas fa-info-circle"></i> Basic Information</div>
+                        <div style="display:flex;gap:12px;flex-wrap:wrap">
+                            <div class="form-group" style="min-width:300px;flex:1">
+                                <label class="form-label">Project Name</label>
+                                <input class="form-input" id="projectName" placeholder="Enter project name">
+                            </div>
+                            <div class="form-group" style="min-width:200px">
+                                <label class="form-label">Category</label>
+                                <select class="form-select" id="projectCategory">
+                                    <option value="">Select Category</option>
+                                    <option value="Web Development">Web Development</option>
+                                    <option value="Mobile App">Mobile App</option>
+                                    <option value="Digital Marketing">Digital Marketing</option>
+                                    <option value="Graphic Design">Graphic Design</option>
+                                    <option value="SEO">SEO</option>
+                                    <option value="Content Writing">Content Writing</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Project Description</label>
+                            <textarea class="form-textarea" id="projectDescription" placeholder="Enter project description"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <div class="form-section-title"><i class="fas fa-cog"></i> Project Details</div>
+                        <div style="display:flex;gap:12px;flex-wrap:wrap">
+                            <div class="form-group" style="min-width:200px">
+                                <label class="form-label">Budget</label>
+                                <input class="form-input" id="projectBudget" placeholder="$0.00">
+                            </div>
+                            <div class="form-group" style="min-width:200px">
+                                <label class="form-label">Deadline</label>
+                                <input class="form-input" id="projectDeadline" type="date">
+                            </div>
+                            <div class="form-group" style="min-width:200px">
+                                <label class="form-label">Priority</label>
+                                <select class="form-select" id="projectPriority">
+                                    <option value="Low">Low</option>
+                                    <option value="Medium">Medium</option>
+                                    <option value="High">High</option>
+                                    <option value="Urgent">Urgent</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Requirements</label>
+                            <textarea class="form-textarea" id="projectRequirements" placeholder="Enter project requirements"></textarea>
+                        </div>
+                    </div>
+
+                    <div style="margin-top:12px">
+                        <button class="btn edit" onclick="addNewProject()"><i class="fas fa-save"></i> Add Project</button>
+                    </div>
+
+                    <div style="margin-top:30px">
+                        <h4><i class="fas fa-history"></i> Recently Added Projects</h4>
+                        <div class="table-shell" style="margin-top:12px">
+                            <table class="app-table" id="projectHistoryTable">
+                                <thead><tr>
+                                    <th>Project Name</th>
+                                    <th>Category</th>
+                                    <th>Budget</th>
+                                    <th>Status</th>
+                                    <th>Date Added</th>
+                                </tr></thead>
+                                <tbody></tbody>
+                        </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Available Projects panel -->
+                <section class="panel" id="availableProjectsPanel" style="display:none">
+                    <div class="panel-header">
+                        <h3><i class="fas fa-project-diagram"></i> Available Projects</h3>
+                        <div class="controls muted">Projects available for assignment</div>
+                    </div>
+
+                    <div class="table-shell">
+                        <div class="table-tools" style="margin-bottom:10px">
+                            <div class="search"><input placeholder="Search projects..." data-table="availableProjectsTable" oninput="tableSearch(event)"></div>
+
+                            <select id="availableCategoryFilter" class="select-page" onchange="applyTableFilter('availableProjectsTable','category', this.value)">
+                                <option value="">All categories</option>
+                                <option value="Web Development">Web Development</option>
+                                <option value="Mobile App">Mobile App</option>
+                                <option value="Digital Marketing">Digital Marketing</option>
+                                <option value="Graphic Design">Graphic Design</option>
+                                <option value="SEO">SEO</option>
+                                <option value="Content Writing">Content Writing</option>
+                            </select>
+
+                            <select id="availablePriorityFilter" class="select-page" onchange="applyTableFilter('availableProjectsTable','priority', this.value)">
+                                <option value="">All priorities</option>
+                                <option value="Low">Low</option>
+                                <option value="Medium">Medium</option>
+                                <option value="High">High</option>
+                                <option value="Urgent">Urgent</option>
+                            </select>
+
+                            <select class="select-page" data-table="availableProjectsTable" onchange="tablePageSizeChange(event)">
+                                <option value="5">5 / page</option><option value="10" selected>10 / page</option><option value="25">25 / page</option>
+                            </select>
+                        </div>
+
+                        <table class="app-table" id="availableProjectsTable">
+                            <thead><tr data-table="availableProjectsTable">
+                                <th data-col="name"><i class="fas fa-file-signature"></i> Name</th>
+                                <th data-col="category"><i class="fas fa-tag"></i> Category</th>
+                                <th data-col="budget"><i class="fas fa-dollar-sign"></i> Budget</th>
+                                <th data-col="deadline"><i class="fas fa-calendar-alt"></i> Deadline</th>
+                                <th data-col="priority"><i class="fas fa-flag"></i> Priority</th>
+                                <th data-col="actions"><i class="fas fa-ellipsis-h"></i> Actions</th>
+                            </tr></thead>
+                            <tbody></tbody>
+                        </table>
+                        <div class="pagination" data-table="availableProjectsTable"></div>
+                    </div>
+                </section>
+
+                <!-- My Projects panel -->
+                <section class="panel" id="myProjectsPanel" style="display:none">
+                    <div class="panel-header">
+                        <h3><i class="fas fa-tasks"></i> My Projects</h3>
+                        <div class="controls muted">Projects you're managing</div>
+                    </div>
+
+                    <div class="table-shell">
+                        <div class="table-tools" style="margin-bottom:10px">
+                            <div class="search"><input placeholder="Search my projects..." data-table="myProjectsTable" oninput="tableSearch(event)"></div>
+
+                            <select id="myProjectsStatusFilter" class="select-page" onchange="applyTableFilter('myProjectsTable','status', this.value)">
+                                <option value="">All statuses</option>
+                                <option value="in progress">In Progress</option>
+                                <option value="completed">Completed</option>
+                                <option value="on hold">On Hold</option>
+                            </select>
+
+                            <select class="select-page" data-table="myProjectsTable" onchange="tablePageSizeChange(event)">
+                                <option value="5">5 / page</option><option value="10" selected>10 / page</option><option value="25">25 / page</option>
+                            </select>
+                        </div>
+
+                        <table class="app-table" id="myProjectsTable">
+                            <thead><tr data-table="myProjectsTable">
+                                <th data-col="name"><i class="fas fa-file-signature"></i> Name</th>
+                                <th data-col="category"><i class="fas fa-tag"></i> Category</th>
+                                <th data-col="budget"><i class="fas fa-dollar-sign"></i> Budget</th>
+                                <th data-col="deadline"><i class="fas fa-calendar-alt"></i> Deadline</th>
+                                <th data-col="status"><i class="fas fa-info-circle"></i> Status</th>
+                                <th data-col="progress"><i class="fas fa-chart-line"></i> Progress</th>
+                                <th data-col="actions"><i class="fas fa-ellipsis-h"></i> Actions</th>
+                            </tr></thead>
+                            <tbody></tbody>
+                        </table>
+                        <div class="pagination" data-table="myProjectsTable"></div>
+                    </div>
+                </section>
+
+                <!-- Payments panel -->
+                <section class="panel" id="paymentsPanel" style="display:none">
+                    <div class="panel-header">
+                        <h3><i class="fas fa-credit-card"></i> Payment History</h3>
+                        <div class="controls muted">Your payment details</div>
+                    </div>
+
+                    <div class="table-shell">
+                        <div class="table-tools" style="margin-bottom:10px">
+                            <div class="search"><input placeholder="Search payments..." data-table="paymentsTable" oninput="tableSearch(event)"></div>
+
+                            <select id="paymentsStatusFilter" class="select-page" onchange="applyTableFilter('paymentsTable','status', this.value)">
+                                <option value="">All status</option>
+                                <option value="pending">Pending</option>
+                                <option value="completed">Completed</option>
+                            </select>
+
+                            <select class="select-page" data-table="paymentsTable" onchange="tablePageSizeChange(event)">
+                                <option value="5">5 / page</option><option value="10" selected>10 / page</option><option value="25">25 / page</option>
+                            </select>
+                        </div>
+
+                        <table class="app-table" id="paymentsTable">
+                            <thead><tr data-table="paymentsTable">
+                                <th data-col="date"><i class="fas fa-calendar"></i> Date</th>
+                                <th data-col="amount"><i class="fas fa-dollar-sign"></i> Amount</th>
+                                <th data-col="project"><i class="fas fa-project-diagram"></i> Project</th>
+                                <th data-col="method"><i class="fas fa-credit-card"></i> Payment Method</th>
+                                <th data-col="status"><i class="fas fa-info-circle"></i> Status</th>
+                            </tr></thead>
+                            <tbody></tbody>
+                        </table>
+                        <div class="pagination" data-table="paymentsTable"></div>
+                    </div>
+                </section>
+
+                <!-- Profile panel -->
+                <section class="panel" id="profilePanel" style="display:none">
+                    <div class="panel-header">
+                        <h3><i class="fas fa-user"></i> Profile</h3>
+                        <div class="muted">Update your profile & work information</div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <div class="form-section-title"><i class="fas fa-user"></i> Profile Information</div>
+                        <div style="display:flex;gap:20px;align-items:flex-start">
+                            <div style="display:flex;flex-direction:column;align-items:center;gap:10px">
+                                <div class="avatar" style="width:100px;height:100px;border-radius:50%;overflow:hidden">
+                                    <img src="https://i.pravatar.cc/150?img=8" alt="Manager Profile" id="managerProfileImage">
+                                </div>
+                                <button class="btn edit" onclick="changeProfileImage()"><i class="fas fa-camera"></i> Change Photo</button>
+                            </div>
+                            
+                            <div style="flex:1;display:flex;flex-direction:column;gap:16px">
+                                <div style="display:flex;gap:12px;flex-wrap:wrap">
+                                    <div class="form-group" style="min-width:300px;flex:1">
+                                        <label class="form-label">Name</label>
+                                        <input class="form-input" id="managerName" placeholder="Manager name" value="Alice K">
+                                    </div>
+                                    <div class="form-group" style="min-width:300px;flex:1">
+                                        <label class="form-label">Email</label>
+                                        <input class="form-input" id="managerEmail" placeholder="manager@example.com" value="alice@corp.com">
+                                    </div>
+                                </div>
+                                
+                                <div style="display:flex;gap:12px;flex-wrap:wrap">
+                                    <div class="form-group" style="min-width:300px;flex:1">
+                                        <label class="form-label">Work Hours / Experience</label>
+                                        <input class="form-input" id="managerWork" placeholder="e.g. 9am - 6pm / 5 years" value="9am - 6pm / 5 years">
+                                    </div>
+                                    <div class="form-group" style="min-width:300px;flex:1">
+                                        <label class="form-label">Phone</label>
+                                        <input class="form-input" id="managerPhone" placeholder="+1 234 567 8900" value="+8801234567">
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label">Bio</label>
+                                    <textarea class="form-textarea" id="managerBio" placeholder="Write something about yourself...">Experienced project manager with PMP certification and 5+ years in team management and project coordination.</textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <div class="form-section-title"><i class="fas fa-money-bill-wave"></i> Payment Information</div>
+                        <div style="display:flex;gap:12px;flex-wrap:wrap">
+                            <div class="form-group" style="min-width:300px;flex:1">
+                                <label class="form-label">Payment Method</label>
+                                <select class="form-select" id="managerPaymentMethod">
+                                    <option value="Bank Transfer">Bank Transfer</option>
+                                    <option value="PayPal">PayPal</option>
+                                    <option value="Stripe">Stripe</option>
+                                    <option value="Cash">Cash</option>
+                                </select>
+                            </div>
+                            <div class="form-group" style="min-width:300px;flex:1">
+                                <label class="form-label">Payment Address</label>
+                                <input class="form-input" id="managerPaymentAddress" placeholder="Payment receiving address" value="Account: 987654321, Bank: XYZ Bank">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top:20px">
+                        <button class="btn edit" onclick="saveProfile()"><i class="fas fa-save"></i> Save Profile</button>
+                    </div>
+                </section>
+            </section>
+        </main>
+    </div>
+
+    <!-- Project Details Modal -->
+    <div id="projectModal" class="modal-backdrop" role="dialog" aria-hidden="true">
+        <div class="modal-card prominent" style="width: 700px;">
+            <h3 id="projectModalTitle"><i class="fas fa-project-diagram"></i> Project Details</h3>
+            <div id="projectModalBody"></div>
+            <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px">
+                <button class="btn del" onclick="closeProjectModal()"><i class="fas fa-times"></i> Close</button>
+                <button class="btn accept" id="projectModalAcceptBtn" style="display:none"><i class="fas fa-check"></i> Accept Project</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div id="notification" class="notification" style="display:none"></div>
+
+    <script>
+        // State management for manager dashboard
+        const MANAGER_STORAGE_KEY = 'wave_portal_manager_state_v1';
+        
+        const defaultManagerSeed = {
+            manager: {
+                id: 1,
+                name: 'Alice K',
+                email: 'alice@corp.com',
+                phone: '+8801234567',
+                avatar: 'https://i.pravatar.cc/80?img=8',
+                workHours: '9am - 6pm / 5 years',
+                bio: 'Experienced project manager with PMP certification and 5+ years in team management and project coordination.',
+                paymentMethod: 'Bank Transfer',
+                paymentAddress: 'Account: 987654321, Bank: XYZ Bank',
+                earnings: 2500,
+                projectsCompleted: 12
+            },
+            teamMembers: [
+                {id:1, avatar:'https://i.pravatar.cc/80?img=12', name:'John Doe', email:'john@example.com', status:'active', specialization:'Web Developer', phone:'+1 234 567 8901', bio:'Full-stack developer with 3 years of experience', joinDate:'2023-01-15', projectsCompleted: 5},
+                {id:2, avatar:'https://i.pravatar.cc/80?img=14', name:'Maya Lee', email:'maya@example.com', status:'active', specialization:'Graphic Designer', phone:'+1 234 567 8902', bio:'Creative designer specializing in branding and UI/UX', joinDate:'2023-03-22', projectsCompleted: 3},
+                {id:3, avatar:'https://i.pravatar.cc/80?img=4', name:'Peter Q', email:'peter@company.com', status:'inactive', specialization:'SEO Expert', phone:'+1 234 567 8903', bio:'SEO specialist with focus on technical optimization', joinDate:'2022-11-05', projectsCompleted: 2}
+            ],
+            availableProjects: [
+                {id:1, name:'E-commerce Platform', category:'Web Development', budget:'$12,000', deadline:'2024-04-15', priority:'High', description:'Build a complete e-commerce platform with payment integration and inventory management', requirements:'React frontend, Node.js backend, Stripe integration, inventory management system', status: 'available'},
+                {id:2, name:'Mobile Banking App', category:'Mobile App', budget:'$15,000', deadline:'2024-05-20', priority:'Urgent', description:'Develop a secure mobile banking application for iOS and Android', requirements:'React Native, biometric authentication, secure API integration, real-time notifications', status: 'available'},
+                {id:3, name:'Brand Identity Design', category:'Graphic Design', budget:'$3,500', deadline:'2024-03-30', priority:'Medium', description:'Create a complete brand identity including logo, color palette, and brand guidelines', requirements:'Logo design, color palette, typography, brand guidelines document', status: 'available'}
+            ],
+            myProjects: [
+                {id:4, name:'Website Redesign', category:'Web Development', budget:'$5,000', deadline:'2023-12-15', priority:'High', description:'Complete redesign of company website with modern UI/UX and responsive design', requirements:'Responsive design, CMS integration, SEO optimization', status: 'in progress', progress: 75},
+                {id:5, name:'Marketing Campaign', category:'Digital Marketing', budget:'$3,200', deadline:'2023-06-30', priority:'Medium', description:'Two-week marketing campaign focusing on social media and email marketing', requirements:'Social media integration, email templates, analytics tracking', status: 'completed', progress: 100},
+                {id:6, name:'CRM Implementation', category:'Web Development', budget:'$6,000', deadline:'2023-10-05', priority:'High', description:'Implementation of CRM system with custom modules and integration', requirements:'CRM setup, custom modules, API integration, user training', status: 'completed', progress: 100}
+            ],
+            payments: [
+                {id:1, date:'2023-10-05', amount:'$300', project:'CRM Implementation', method:'Bank Transfer', status:'completed'},
+                {id:2, date:'2023-06-30', amount:'$320', project:'Marketing Campaign', method:'Bank Transfer', status:'completed'},
+                {id:3, date:'2023-12-15', amount:'$500', project:'Website Redesign', method:'Bank Transfer', status:'pending'}
+            ],
+            activities: [
+                {id: 1, when: new Date().toISOString(), text: 'Accepted Website Redesign project', type: 'project'},
+                {id: 2, when: new Date(Date.now() - 3600000).toISOString(), text: 'Completed CRM Implementation project', type: 'completion'},
+                {id: 3, when: new Date(Date.now() - 7200000).toISOString(), text: 'Received payment for Marketing Campaign', type: 'payment'},
+                {id: 4, when: new Date(Date.now() - 10800000).toISOString(), text: 'Added new team member: Maya Lee', type: 'team'}
+            ]
+        };
+
+        let ManagerState = JSON.parse(JSON.stringify(defaultManagerSeed));
+
+        // Load state from localStorage
+        function loadManagerState() {
+            try {
+                const raw = localStorage.getItem(MANAGER_STORAGE_KEY);
+                if (raw) {
+                    const parsed = JSON.parse(raw);
+                    ManagerState = {...ManagerState, ...parsed};
+                    return true;
+                }
+            } catch(e) {
+                console.error('Failed to load manager state', e);
+            }
+            return false;
+        }
+
+        // Save state to localStorage
+        function saveManagerState() {
+            try {
+                localStorage.setItem(MANAGER_STORAGE_KEY, JSON.stringify(ManagerState));
+            } catch(e) {
+                console.error('Failed to save manager state', e);
+            }
+        }
+
+        // Initialize
+        if (!loadManagerState()) {
+            saveManagerState();
+        }
+
+        // DOM utility functions
+        const q = s => document.querySelector(s);
+        const qA = s => document.querySelectorAll(s);
+        
+        function el(tag, props = {}, children = []) {
+            const E = document.createElement(tag);
+            Object.assign(E, props);
+            (Array.isArray(children) ? children : [children]).forEach(c => {
+                if (c == null) return;
+                if (typeof c === 'string') E.appendChild(document.createTextNode(c));
+                else E.appendChild(c);
+            });
+            return E;
+        }
+
+        function escapeHtml(str) {
+            if (!str && str !== 0) return '';
+            return String(str).replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]));
+        }
+
+        // Profile switching functionality
+        function toggleProfileDropdown() {
+            const dropdown = document.getElementById('profileDropdown');
+            dropdown.classList.toggle('show');
+        }
+
+        function switchProfile(profileType) {
+            const dropdown = document.getElementById('profileDropdown');
+            dropdown.classList.remove('show');
+            
+            // Update active state in dropdown
+            document.querySelectorAll('.profile-option').forEach(option => {
+                option.classList.remove('active');
+            });
+            document.querySelector(`.profile-option[data-profile="${profileType}"]`).classList.add('active');
+            
+            // Show notification
+            showNotification(`Switching to ${profileType} dashboard...`);
+            
+            // In a real application, this would redirect to the appropriate dashboard
+            setTimeout(() => {
+                if (profileType === 'manager') {
+                    // Already in manager dashboard
+                    showNotification('You are now in Manager Dashboard');
+                } else {
+                    // For demo purposes, we'll just show an alert
+                    alert(`In a real application, this would redirect to ${profileType}-dashboard.html`);
+                    // window.location.href = `${profileType}-dashboard.html`;
+                }
+            }, 1000);
+        }
+
+        // Logout functionality
+        function logout() {
+            if (confirm('Are you sure you want to log out?')) {
+                showNotification('Logging out...');
+                setTimeout(() => {
+                    // In a real application, this would redirect to index.html
+                    alert('In a real application, this would redirect to index.html');
+                    // window.location.href = 'index.html';
+                }, 1000);
+            }
+        }
+
+        // Show notification
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.style.display = 'block';
+            
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                notification.style.transition = 'opacity 0.3s';
+                setTimeout(() => {
+                    notification.style.display = 'none';
+                    notification.style.opacity = '1';
+                }, 300);
+            }, 3000);
+        }
+
+        // Panel switching
+        function switchPanel(e) {
+            const btn = e.currentTarget;
+            document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const target = btn.dataset.target;
+            document.querySelectorAll('.panel').forEach(p => { p.style.display = 'none'; p.classList.remove('show'); });
+            const panel = document.getElementById(target);
+            if (!panel) return;
+            panel.style.display = 'block';
+            setTimeout(() => panel.classList.add('show'), 20);
+
+            // Show/hide dashboard cards
+            if (target === 'dashboardPanel') {
+                document.getElementById('cardsRow').style.display = 'flex';
+            } else {
+                document.getElementById('cardsRow').style.display = 'none';
+            }
+            
+            // Update stats when switching to dashboard
+            if (target === 'dashboardPanel') {
+                updateManagerStats();
+                renderActivityTable();
+            }
+            
+            // Update tables when switching to panels
+            if (target === 'teamMembersPanel' || target === 'availableProjectsPanel' || 
+                target === 'myProjectsPanel' || target === 'paymentsPanel') {
+                updateManagerTables();
+            }
+            
+            // Update project history when switching to add project panel
+            if (target === 'addProjectPanel') {
+                updateProjectHistory();
+            }
+            
+            // Update live counts when switching to team members panel
+            if (target === 'teamMembersPanel') {
+                updateLiveTeamCount();
+            }
+        }
+
+        // Update statistics
+        function updateManagerStats() {
+            // Team Members
+            document.getElementById('kTeam').innerText = ManagerState.teamMembers.filter(m => m.status === 'active').length;
+            
+            // Active Projects
+            document.getElementById('kActiveProjects').innerText = ManagerState.myProjects.filter(p => p.status === 'in progress').length;
+            
+            // Completed Projects
+            document.getElementById('kCompleted').innerText = ManagerState.myProjects.filter(p => p.status === 'completed').length;
+            
+            // Total Earnings
+            const totalEarnings = ManagerState.payments
+                .filter(p => p.status === 'completed')
+                .reduce((sum, payment) => {
+                    const amount = parseFloat(payment.amount.replace('$', '').replace(',', ''));
+                    return sum + (isNaN(amount) ? 0 : amount);
+                }, 0);
+            document.getElementById('kEarnings').innerText = '$' + totalEarnings.toLocaleString();
+        }
+
+        // Update live team count
+        function updateLiveTeamCount() {
+            const activeTeamMembers = ManagerState.teamMembers.filter(m => m.status === 'active').length;
+            document.getElementById('liveTeamCount').innerText = activeTeamMembers;
+        }
+
+        // Render activity table
+        function renderActivityTable() {
+            const tbody = document.querySelector('#activityTable tbody');
+            if (!tbody) return;
+            
+            tbody.innerHTML = '';
+            
+            // Sort activities by date (newest first)
+            const sortedActivities = [...ManagerState.activities].sort((a, b) => new Date(b.when) - new Date(a.when));
+            
+            // Get search term
+            const searchTerm = document.getElementById('activitySearch')?.value?.toLowerCase() || '';
+            
+            // Filter activities based on search term
+            const filteredActivities = sortedActivities.filter(activity => 
+                activity.text.toLowerCase().includes(searchTerm) || 
+                activity.type.toLowerCase().includes(searchTerm)
+            );
+            
+            // Show only latest 20 activities
+            filteredActivities.slice(0, 20).forEach(activity => {
+                const tr = document.createElement('tr');
+                const when = new Date(activity.when).toLocaleString();
+                tr.innerHTML = `
+                    <td>${escapeHtml(when)}</td>
+                    <td>${escapeHtml(activity.text)}</td>
+                    <td><span class="badge ${activity.type === 'project' ? 'live' : activity.type === 'completion' ? 'completed' : 'pending'}">${escapeHtml(activity.type)}</span></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Update tables
+        function updateManagerTables() {
+            // Update team members table
+            const teamMembersTable = document.querySelector('#teamMembersTable tbody');
+            if (teamMembersTable) {
+                teamMembersTable.innerHTML = '';
+                ManagerState.teamMembers.forEach(member => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td><div class="avatar"><img src="${member.avatar}" /></div></td>
+                        <td>${escapeHtml(member.name)}</td>
+                        <td>${escapeHtml(member.email)}</td>
+                        <td>${escapeHtml(member.specialization)}</td>
+                        <td><span class="badge ${member.status==='active' ? 'live' : 'pending'}">${escapeHtml(member.status)}</span></td>
+                        <td>
+                            <button class="btn view" onclick="viewTeamMember(${member.id})"><i class="fas fa-eye"></i> View</button>
+                            <button class="btn edit" onclick="editTeamMember(${member.id})"><i class="fas fa-edit"></i> Edit</button>
+                            ${member.status === 'active' ? 
+                                `<button class="btn del" onclick="deactivateTeamMember(${member.id})"><i class="fas fa-user-slash"></i> Deactivate</button>` : 
+                                `<button class="btn admin" onclick="activateTeamMember(${member.id})"><i class="fas fa-user-check"></i> Activate</button>`
+                            }
+                        </td>
+                    `;
+                    teamMembersTable.appendChild(tr);
+                });
+            }
+            
+            // Update available projects table
+            const availableProjectsTable = document.querySelector('#availableProjectsTable tbody');
+            if (availableProjectsTable) {
+                availableProjectsTable.innerHTML = '';
+                ManagerState.availableProjects.forEach(project => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${escapeHtml(project.name)}</td>
+                        <td>${escapeHtml(project.category)}</td>
+                        <td>${escapeHtml(project.budget)}</td>
+                        <td>${escapeHtml(project.deadline)}</td>
+                        <td><span class="badge ${project.priority==='High'||project.priority==='Urgent' ? 'live' : project.priority==='Medium' ? 'pending' : 'completed'}">${escapeHtml(project.priority)}</span></td>
+                        <td>
+                            <button class="btn view" onclick="viewProjectDetails(${project.id}, 'available')"><i class="fas fa-eye"></i> View</button>
+                            <button class="btn accept" onclick="acceptProject(${project.id})"><i class="fas fa-check"></i> Accept</button>
+                        </td>
+                    `;
+                    availableProjectsTable.appendChild(tr);
+                });
+            }
+            
+            // Update my projects table
+            const myProjectsTable = document.querySelector('#myProjectsTable tbody');
+            if (myProjectsTable) {
+                myProjectsTable.innerHTML = '';
+                ManagerState.myProjects.forEach(project => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${escapeHtml(project.name)}</td>
+                        <td>${escapeHtml(project.category)}</td>
+                        <td>${escapeHtml(project.budget)}</td>
+                        <td>${escapeHtml(project.deadline)}</td>
+                        <td><span class="badge ${project.status==='in progress' ? 'pending' : 'completed'}">${escapeHtml(project.status)}</span></td>
+                        <td>
+                            <div style="display:flex;align-items:center;gap:8px">
+                                <div style="flex:1;height:8px;background:rgba(255,255,255,0.1);border-radius:4px;overflow:hidden">
+                                    <div style="height:100%;width:${project.progress}%;background:linear-gradient(90deg, var(--accent), var(--accent-2));border-radius:4px"></div>
+                                </div>
+                                <span>${project.progress}%</span>
+                            </div>
+                        </td>
+                        <td>
+                            <button class="btn view" onclick="viewProjectDetails(${project.id}, 'my')"><i class="fas fa-eye"></i> View</button>
+                            <button class="btn edit" onclick="editProjectProgress(${project.id})"><i class="fas fa-edit"></i> Update</button>
+                            ${project.status === 'in progress' ? 
+                                `<button class="btn admin" onclick="completeProject(${project.id})"><i class="fas fa-check"></i> Complete</button>` : 
+                                ''
+                            }
+                        </td>
+                    `;
+                    myProjectsTable.appendChild(tr);
+                });
+            }
+            
+            // Update payments table
+            const paymentsTable = document.querySelector('#paymentsTable tbody');
+            if (paymentsTable) {
+                paymentsTable.innerHTML = '';
+                ManagerState.payments.forEach(payment => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${escapeHtml(payment.date)}</td>
+                        <td>${escapeHtml(payment.amount)}</td>
+                        <td>${escapeHtml(payment.project)}</td>
+                        <td>${escapeHtml(payment.method)}</td>
+                        <td><span class="badge ${payment.status==='completed' ? 'completed' : 'pending'}">${escapeHtml(payment.status)}</span></td>
+                    `;
+                    paymentsTable.appendChild(tr);
+                });
+            }
+        }
+
+        // Add new project
+        function addNewProject() {
+            const name = document.getElementById('projectName').value.trim();
+            const category = document.getElementById('projectCategory').value;
+            const budget = document.getElementById('projectBudget').value.trim();
+            const deadline = document.getElementById('projectDeadline').value;
+            const priority = document.getElementById('projectPriority').value;
+            const description = document.getElementById('projectDescription').value.trim();
+            const requirements = document.getElementById('projectRequirements').value.trim();
+            
+            if (!name || !category || !budget || !deadline) {
+                alert('Please fill in all required fields');
+                return;
+            }
+            
+            const id = ManagerState.availableProjects.length ? Math.max(...ManagerState.availableProjects.map(p => p.id)) + 1 : 1;
+            const newProject = {
+                id,
+                name,
+                category,
+                budget,
+                deadline,
+                priority,
+                description,
+                requirements,
+                status: 'available'
+            };
+            
+            ManagerState.availableProjects.unshift(newProject);
+            
+            // Add activity
+            ManagerState.activities.unshift({
+                id: ManagerState.activities.length ? Math.max(...ManagerState.activities.map(a => a.id)) + 1 : 1,
+                when: new Date().toISOString(),
+                text: `${name} project created`,
+                type: 'project'
+            });
+            
+            saveManagerState();
+            
+            // Clear form
+            document.getElementById('projectName').value = '';
+            document.getElementById('projectCategory').value = '';
+            document.getElementById('projectBudget').value = '';
+            document.getElementById('projectDeadline').value = '';
+            document.getElementById('projectPriority').value = 'Medium';
+            document.getElementById('projectDescription').value = '';
+            document.getElementById('projectRequirements').value = '';
+            
+            // Update project history table
+            updateProjectHistory();
+            
+            showNotification('Project added successfully!');
+        }
+
+        // Update project history table
+        function updateProjectHistory() {
+            const tbody = document.querySelector('#projectHistoryTable tbody');
+            if (!tbody) return;
+            
+            tbody.innerHTML = '';
+            ManagerState.availableProjects.slice(0, 10).forEach(project => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${escapeHtml(project.name)}</td>
+                    <td>${escapeHtml(project.category)}</td>
+                    <td>${escapeHtml(project.budget)}</td>
+                    <td><span class="badge ${project.status === 'available' ? 'live' : 'pending'}">${escapeHtml(project.status)}</span></td>
+                    <td>${new Date().toLocaleDateString()}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // View project details
+        function viewProjectDetails(id, type) {
+            let project;
+            if (type === 'available') {
+                project = ManagerState.availableProjects.find(p => p.id === id);
+            } else {
+                project = ManagerState.myProjects.find(p => p.id === id);
+            }
+            
+            if (project) {
+                const modalBody = document.getElementById('projectModalBody');
+                const modalTitle = document.getElementById('projectModalTitle');
+                const acceptBtn = document.getElementById('projectModalAcceptBtn');
+                
+                modalTitle.innerHTML = `<i class="fas fa-project-diagram"></i> ${project.name} - Project Details`;
+                
+                modalBody.innerHTML = `
+                    <div class="form-section">
+                        <div class="form-section-title"><i class="fas fa-info-circle"></i> Basic Information</div>
+                        <div style="display:flex;gap:12px;flex-wrap:wrap">
+                            <div class="form-group" style="min-width:200px;flex:1">
+                                <label class="form-label">Project Name</label>
+                                <div class="form-input" style="background:rgba(255,255,255,0.02)">${escapeHtml(project.name)}</div>
+                            </div>
+                            <div class="form-group" style="min-width:200px;flex:1">
+                                <label class="form-label">Category</label>
+                                <div class="form-input" style="background:rgba(255,255,255,0.02)">${escapeHtml(project.category)}</div>
+                            </div>
+                        </div>
+                        <div style="display:flex;gap:12px;flex-wrap:wrap">
+                            <div class="form-group" style="min-width:200px;flex:1">
+                                <label class="form-label">Budget</label>
+                                <div class="form-input" style="background:rgba(255,255,255,0.02)">${escapeHtml(project.budget)}</div>
+                            </div>
+                            <div class="form-group" style="min-width:200px;flex:1">
+                                <label class="form-label">Deadline</label>
+                                <div class="form-input" style="background:rgba(255,255,255,0.02)">${escapeHtml(project.deadline)}</div>
+                            </div>
+                        </div>
+                        <div style="display:flex;gap:12px;flex-wrap:wrap">
+                            <div class="form-group" style="min-width:200px;flex:1">
+                                <label class="form-label">Priority</label>
+                                <div class="form-input" style="background:rgba(255,255,255,0.02)">${escapeHtml(project.priority)}</div>
+                            </div>
+                            <div class="form-group" style="min-width:200px;flex:1">
+                                <label class="form-label">Status</label>
+                                <div class="form-input" style="background:rgba(255,255,255,0.02)"><span class="badge ${project.status==='available' ? 'live' : project.status==='in progress' ? 'pending' : 'completed'}">${escapeHtml(project.status)}</span></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-section">
+                        <div class="form-section-title"><i class="fas fa-align-left"></i> Description</div>
+                        <div class="form-group">
+                            <div class="form-textarea" style="background:rgba(255,255,255,0.02); height: auto;">${escapeHtml(project.description)}</div>
+                        </div>
+                    </div>
+                    <div class="form-section">
+                        <div class="form-section-title"><i class="fas fa-tasks"></i> Requirements</div>
+                        <div class="form-group">
+                            <div class="form-textarea" style="background:rgba(255,255,255,0.02); height: auto;">${escapeHtml(project.requirements)}</div>
+                        </div>
+                    </div>
+                `;
+                
+                if (type === 'available') {
+                    acceptBtn.style.display = 'inline-flex';
+                    acceptBtn.onclick = function() { acceptProject(id); };
+                } else {
+                    acceptBtn.style.display = 'none';
+                }
+                
+                document.getElementById('projectModal').style.display = 'flex';
+                document.getElementById('projectModal').setAttribute('aria-hidden', 'false');
+            }
+        }
+
+        function closeProjectModal() {
+            document.getElementById('projectModal').style.display = 'none';
+            document.getElementById('projectModal').setAttribute('aria-hidden', 'true');
+        }
+
+        // Accept project
+        function acceptProject(id) {
+            const project = ManagerState.availableProjects.find(p => p.id === id);
+            if (project) {
+                // Remove from available projects
+                ManagerState.availableProjects = ManagerState.availableProjects.filter(p => p.id !== id);
+                
+                // Add to my projects
+                const newId = ManagerState.myProjects.length ? Math.max(...ManagerState.myProjects.map(p => p.id)) + 1 : 1;
+                ManagerState.myProjects.unshift({
+                    ...project,
+                    id: newId,
+                    status: 'in progress',
+                    progress: 0
+                });
+                
+                // Add activity
+                ManagerState.activities.unshift({
+                    id: ManagerState.activities.length ? Math.max(...ManagerState.activities.map(a => a.id)) + 1 : 1,
+                    when: new Date().toISOString(),
+                    text: `Accepted ${project.name} project`,
+                    type: 'project'
+                });
+                
+                saveManagerState();
+                updateManagerTables();
+                updateManagerStats();
+                closeProjectModal();
+                showNotification(`Project "${project.name}" accepted successfully!`);
+            }
+        }
+
+        // Complete project
+        function completeProject(id) {
+            const project = ManagerState.myProjects.find(p => p.id === id);
+            if (project) {
+                project.status = 'completed';
+                project.progress = 100;
+                
+                // Add payment record
+                const paymentId = ManagerState.payments.length ? Math.max(...ManagerState.payments.map(p => p.id)) + 1 : 1;
+                ManagerState.payments.unshift({
+                    id: paymentId,
+                    date: new Date().toISOString().split('T')[0],
+                    amount: project.budget,
+                    project: project.name,
+                    method: ManagerState.manager.paymentMethod,
+                    status: 'pending'
+                });
+                
+                // Update manager earnings
+                const amount = parseFloat(project.budget.replace('$', '').replace(',', ''));
+                ManagerState.manager.earnings += isNaN(amount) ? 0 : amount;
+                ManagerState.manager.projectsCompleted += 1;
+                
+                // Add activity
+                ManagerState.activities.unshift({
+                    id: ManagerState.activities.length ? Math.max(...ManagerState.activities.map(a => a.id)) + 1 : 1,
+                    when: new Date().toISOString(),
+                    text: `Completed ${project.name} project`,
+                    type: 'completion'
+                });
+                
+                saveManagerState();
+                updateManagerTables();
+                updateManagerStats();
+                showNotification(`Project "${project.name}" marked as completed!`);
+            }
+        }
+
+        // Edit project progress
+        function editProjectProgress(id) {
+            const project = ManagerState.myProjects.find(p => p.id === id);
+            if (project) {
+                const newProgress = prompt('Enter new progress percentage (0-100):', project.progress);
+                if (newProgress !== null) {
+                    const progress = parseInt(newProgress);
+                    if (!isNaN(progress) && progress >= 0 && progress <= 100) {
+                        project.progress = progress;
+                        
+                        // Add activity
+                        ManagerState.activities.unshift({
+                            id: ManagerState.activities.length ? Math.max(...ManagerState.activities.map(a => a.id)) + 1 : 1,
+                            when: new Date().toISOString(),
+                            text: `Updated progress for ${project.name} to ${progress}%`,
+                            type: 'project'
+                        });
+                        
+                        saveManagerState();
+                        updateManagerTables();
+                        showNotification(`Progress updated to ${progress}% for "${project.name}"`);
+                    } else {
+                        alert('Please enter a valid percentage between 0 and 100');
+                    }
+                }
+            }
+        }
+
+        // Team member functions
+        function viewTeamMember(id) {
+            const member = ManagerState.teamMembers.find(m => m.id === id);
+            if (member) {
+                alert(`Team Member Details:\n\nName: ${member.name}\nEmail: ${member.email}\nSpecialization: ${member.specialization}\nStatus: ${member.status}\nBio: ${member.bio}`);
+            }
+        }
+
+        function editTeamMember(id) {
+            const member = ManagerState.teamMembers.find(m => m.id === id);
+            if (member) {
+                const newSpecialization = prompt('Enter new specialization:', member.specialization);
+                if (newSpecialization !== null) {
+                    member.specialization = newSpecialization;
+                    
+                    // Add activity
+                    ManagerState.activities.unshift({
+                        id: ManagerState.activities.length ? Math.max(...ManagerState.activities.map(a => a.id)) + 1 : 1,
+                        when: new Date().toISOString(),
+                        text: `Updated ${member.name}'s specialization to ${newSpecialization}`,
+                        type: 'team'
+                    });
+                    
+                    saveManagerState();
+                    updateManagerTables();
+                    showNotification(`Updated ${member.name}'s specialization`);
+                }
+            }
+        }
+
+        function deactivateTeamMember(id) {
+            const member = ManagerState.teamMembers.find(m => m.id === id);
+            if (member && confirm(`Are you sure you want to deactivate ${member.name}?`)) {
+                member.status = 'inactive';
+                
+                // Add activity
+                ManagerState.activities.unshift({
+                    id: ManagerState.activities.length ? Math.max(...ManagerState.activities.map(a => a.id)) + 1 : 1,
+                    when: new Date().toISOString(),
+                    text: `Deactivated team member: ${member.name}`,
+                    type: 'team'
+                });
+                
+                saveManagerState();
+                updateManagerTables();
+                updateLiveTeamCount();
+                showNotification(`${member.name} has been deactivated`);
+            }
+        }
+
+        function activateTeamMember(id) {
+            const member = ManagerState.teamMembers.find(m => m.id === id);
+            if (member) {
+                member.status = 'active';
+                
+                // Add activity
+                ManagerState.activities.unshift({
+                    id: ManagerState.activities.length ? Math.max(...ManagerState.activities.map(a => a.id)) + 1 : 1,
+                    when: new Date().toISOString(),
+                    text: `Activated team member: ${member.name}`,
+                    type: 'team'
+                });
+                
+                saveManagerState();
+                updateManagerTables();
+                updateLiveTeamCount();
+                showNotification(`${member.name} has been activated`);
+            }
+        }
+
+        // Profile functions
+        function saveProfile() {
+            ManagerState.manager.name = document.getElementById('managerName').value.trim();
+            ManagerState.manager.email = document.getElementById('managerEmail').value.trim();
+            ManagerState.manager.workHours = document.getElementById('managerWork').value.trim();
+            ManagerState.manager.phone = document.getElementById('managerPhone').value.trim();
+            ManagerState.manager.bio = document.getElementById('managerBio').value.trim();
+            ManagerState.manager.paymentMethod = document.getElementById('managerPaymentMethod').value;
+            ManagerState.manager.paymentAddress = document.getElementById('managerPaymentAddress').value.trim();
+            
+            saveManagerState();
+            showNotification('Profile saved successfully!');
+        }
+
+        function changeProfileImage() {
+            // In a real application, this would open a file picker
+            const newImage = prompt('Enter new profile image URL:');
+            if (newImage) {
+                ManagerState.manager.avatar = newImage;
+                document.getElementById('managerProfileImage').src = newImage;
+                saveManagerState();
+                showNotification('Profile image updated!');
+            }
+        }
+
+        // Table search functionality
+        function tableSearch(event) {
+            const searchTerm = event.target.value.toLowerCase();
+            const tableId = event.target.getAttribute('data-table');
+            const rows = document.querySelectorAll(`#${tableId} tbody tr`);
+            
+            rows.forEach(row => {
+                let found = false;
+                for (let i = 0; i < row.cells.length; i++) {
+                    const cellText = row.cells[i].textContent.toLowerCase();
+                    if (cellText.includes(searchTerm)) {
+                        found = true;
+                        break;
+                    }
+                }
+                row.style.display = found ? '' : 'none';
+            });
+        }
+
+        // Table filter functionality
+        function applyTableFilter(tableId, column, value) {
+            const rows = document.querySelectorAll(`#${tableId} tbody tr`);
+            
+            rows.forEach(row => {
+                let showRow = true;
+                if (value) {
+                    const cellText = row.querySelector(`td:nth-child(${getColumnIndex(tableId, column)})`).textContent.toLowerCase();
+                    if (!cellText.includes(value.toLowerCase())) {
+                        showRow = false;
+                    }
+                }
+                row.style.display = showRow ? '' : 'none';
+            });
+        }
+
+        // Helper function to get column index
+        function getColumnIndex(tableId, columnName) {
+            const headers = document.querySelectorAll(`#${tableId} thead th`);
+            for (let i = 0; i < headers.length; i++) {
+                if (headers[i].getAttribute('data-col') === columnName) {
+                    return i + 1;
+                }
+            }
+            return -1;
+        }
+
+        // Initialize the manager dashboard
+        function initManagerDashboard() {
+            // Set up initial UI state
+            document.getElementById('managerName').value = ManagerState.manager.name;
+            document.getElementById('managerEmail').value = ManagerState.manager.email;
+            document.getElementById('managerWork').value = ManagerState.manager.workHours;
+            document.getElementById('managerPhone').value = ManagerState.manager.phone;
+            document.getElementById('managerBio').value = ManagerState.manager.bio;
+            document.getElementById('managerPaymentMethod').value = ManagerState.manager.paymentMethod;
+            document.getElementById('managerPaymentAddress').value = ManagerState.manager.paymentAddress;
+            document.getElementById('managerProfileImage').src = ManagerState.manager.avatar;
+            
+            // Update stats
+            updateManagerStats();
+            
+            // Update tables
+            updateManagerTables();
+            
+            // Update project history
+            updateProjectHistory();
+            
+            // Update live counts
+            updateLiveTeamCount();
+            
+            // Render activity table
+            renderActivityTable();
+            
+            // Set up card animations
+            document.querySelectorAll('.card').forEach((card, i) => {
+                setTimeout(() => card.classList.add('show'), i * 120);
+            });
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            const dropdown = document.getElementById('profileDropdown');
+            const switcher = document.querySelector('.profile-switcher');
+            if (!switcher.contains(e.target) && dropdown.classList.contains('show')) {
+                dropdown.classList.remove('show');
+            }
+            
+            // Close modals when clicking on backdrop
+            const modal = document.getElementById('projectModal');
+            if (e.target === modal) {
+                closeProjectModal();
+            }
+        });
+
+        // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', initManagerDashboard);
+    </script>
+</body>
+</html>

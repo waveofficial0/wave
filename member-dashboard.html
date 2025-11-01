@@ -1,0 +1,4028 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wave Portal — Member Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg: #0f1115;
+            --glass-weak: rgba(255,255,255,0.02);
+            --glass: rgba(255,255,255,0.04);
+            --glass-strong: rgba(255,255,255,0.06);
+            --muted: rgba(255,255,255,0.65);
+            --accent: #00d4ff;
+            --accent-2: #6a5cff;
+            --accent-soft: rgba(0,212,255,0.08);
+            --success: #28c76f;
+            --warning: #ffb020;
+            --danger: #ff6b6b;
+            --card-radius: 14px;
+            --glass-border: rgba(255,255,255,0.06);
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, "Helvetica Neue", Arial;
+        }
+
+        /* Light theme variables */
+        .light-theme {
+            --bg: #f5f7fa;
+            --glass-weak: rgba(0,0,0,0.02);
+            --glass: rgba(0,0,0,0.04);
+            --glass-strong: rgba(0,0,0,0.06);
+            --muted: rgba(0,0,0,0.65);
+            --accent: #0066cc;
+            --accent-2: #4a3cff;
+            --accent-soft: rgba(0,102,204,0.08);
+            --success: #1da750;
+            --warning: #e69900;
+            --danger: #e63946;
+            --glass-border: rgba(0,0,0,0.06);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: radial-gradient(1200px 600px at 10% 10%, rgba(106,92,255,0.04), transparent 8%),
+                        radial-gradient(800px 500px at 90% 80%, rgba(0,212,255,0.02), transparent 10%),
+                        var(--bg);
+            color: #e9eef8;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            overflow-x: hidden;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .light-theme body {
+            color: #333;
+            background: radial-gradient(1200px 600px at 10% 10%, rgba(106,92,255,0.04), transparent 8%),
+                        radial-gradient(800px 500px at 90% 80%, rgba(0,212,255,0.02), transparent 10%),
+                        var(--bg);
+        }
+
+        /* Background Flicker Glow Effect */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 30%, rgba(106,92,255,0.03) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 70%, rgba(0,212,255,0.02) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+            animation: subtleGlow 8s ease-in-out infinite alternate;
+        }
+
+        .light-theme body::before {
+            background: radial-gradient(circle at 20% 30%, rgba(106,92,255,0.03) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 70%, rgba(0,212,255,0.02) 0%, transparent 50%);
+        }
+
+        @keyframes subtleGlow {
+            0% { opacity: 0.3; }
+            50% { opacity: 0.5; }
+            100% { opacity: 0.4; }
+        }
+
+        .wrap {
+            display: flex;
+            min-height: 100vh;
+            gap: 28px;
+            padding: 28px;
+        }
+
+        .sidebar {
+            width: 260px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+            border: 1px solid var(--glass-border);
+            border-radius: 18px;
+            padding: 20px;
+            backdrop-filter: blur(8px) saturate(120%);
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            align-items: stretch;
+            box-shadow: 0 8px 30px rgba(2,6,23,0.6) inset;
+            transition: all 0.3s ease;
+        }
+
+        .light-theme .sidebar {
+            background: linear-gradient(180deg, rgba(255,255,255,0.8), rgba(255,255,255,0.7));
+            border: 1px solid rgba(0,0,0,0.1);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.1) inset;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+
+        .brand .logo {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: #041025;
+            box-shadow: 0 6px 18px rgba(106,92,255,0.12);
+            overflow: hidden;
+        }
+
+        .brand .logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .brand h2 {
+            font-size: 18px;
+            margin: 0;
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .light-theme .brand h2 {
+            color: #333;
+        }
+
+        .nav {
+            display: flex;
+            flex-direction: column;
+            margin-top: 8px;
+            gap: 8px;
+        }
+
+        .nav button {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 14px;
+            border-radius: 12px;
+            border: none;
+            background: transparent;
+            color: var(--muted);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            font-size: 14px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav button i {
+            width: 18px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .nav button:hover {
+            color: #fff;
+            transform: translateX(6px);
+            background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+            box-shadow: 0 8px 30px rgba(0,0,0,0.35);
+        }
+
+        .light-theme .nav button:hover {
+            color: #000;
+            background: linear-gradient(90deg, rgba(0,0,0,0.02), rgba(0,0,0,0.01));
+        }
+
+        .nav button:hover i {
+            transform: scale(1.2);
+            color: var(--accent);
+        }
+
+        .nav button.active {
+            background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+            color: #fff;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.35);
+        }
+
+        .light-theme .nav button.active {
+            color: #000;
+            background: linear-gradient(90deg, rgba(0,0,0,0.02), rgba(0,0,0,0.01));
+        }
+
+        .nav button.active i {
+            color: var(--accent);
+            text-shadow: 0 0 10px var(--accent);
+        }
+
+        .nav button::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .light-theme .nav button::after {
+            background: linear-gradient(90deg, transparent, rgba(0,0,0,0.1), transparent);
+        }
+
+        .nav button:hover::after {
+            left: 100%;
+        }
+
+        /* Notification Badge for Messages */
+        .nav-badge {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 8px;
+            height: 8px;
+            background: var(--danger);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .sidebar .footer {
+            margin-top: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .logout {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px;
+            border-radius: 12px;
+            background: linear-gradient(90deg, var(--accent-soft), var(--accent-2));
+            border: none;
+            color: #e9f6ff;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(106,92,255,0.2);
+        }
+
+        .logout:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(106,92,255,0.4);
+        }
+
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        header.main-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 18px;
+            padding: 10px 0;
+        }
+
+        .title {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .title h1 {
+            margin: 0;
+            font-size: 24px;
+            color: #eaf6ff;
+            font-weight: 700;
+            text-shadow: 0 0 10px rgba(0,212,255,0.3);
+        }
+
+        .light-theme .title h1 {
+            color: #333;
+            text-shadow: none;
+        }
+
+        .title p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .top-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .theme-switcher {
+            background: linear-gradient(90deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+            border: 1px solid rgba(255,255,255,0.06);
+            padding: 10px 14px;
+            border-radius: 10px;
+            color: var(--muted);
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .light-theme .theme-switcher {
+            background: linear-gradient(90deg, rgba(0,0,0,0.03), rgba(0,0,0,0.01));
+            border: 1px solid rgba(0,0,0,0.06);
+        }
+
+        .theme-switcher:hover {
+            color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+            border-color: rgba(0,212,255,0.3);
+        }
+
+        .light-theme .theme-switcher:hover {
+            color: #000;
+        }
+
+        .profile-switcher {
+            position: relative;
+            display: inline-block;
+        }
+
+        .profile-switcher-btn {
+            background: linear-gradient(90deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+            border: 1px solid rgba(255,255,255,0.06);
+            padding: 10px 14px;
+            border-radius: 10px;
+            color: var(--muted);
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .light-theme .profile-switcher-btn {
+            background: linear-gradient(90deg, rgba(0,0,0,0.03), rgba(0,0,0,0.01));
+            border: 1px solid rgba(0,0,0,0.06);
+        }
+
+        .profile-switcher-btn:hover {
+            color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+            border-color: rgba(0,212,255,0.3);
+        }
+
+        .light-theme .profile-switcher-btn:hover {
+            color: #000;
+        }
+
+        .profile-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 8px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 12px;
+            padding: 8px;
+            min-width: 200px;
+            box-shadow: 0 10px 30px rgba(2,6,23,0.6);
+            backdrop-filter: blur(8px) saturate(120%);
+            z-index: 1000;
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .light-theme .profile-dropdown {
+            background: linear-gradient(180deg, rgba(255,255,255,0.9), rgba(255,255,255,0.8));
+            border: 1px solid rgba(0,0,0,0.1);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .profile-dropdown.show {
+            display: block;
+        }
+
+        .profile-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: var(--muted);
+        }
+
+        .profile-option:hover {
+            background: linear-gradient(90deg, rgba(0,212,255,0.08), rgba(106,92,255,0.04));
+            color: #fff;
+            transform: translateX(5px);
+        }
+
+        .light-theme .profile-option:hover {
+            color: #000;
+            background: linear-gradient(90deg, rgba(0,102,204,0.08), rgba(74,60,255,0.04));
+        }
+
+        .profile-option.active {
+            background: linear-gradient(90deg, rgba(0,212,255,0.12), rgba(106,92,255,0.06));
+            color: #fff;
+        }
+
+        .light-theme .profile-option.active {
+            color: #000;
+            background: linear-gradient(90deg, rgba(0,102,204,0.12), rgba(74,60,255,0.06));
+        }
+
+        .profile-option i {
+            width: 16px;
+            text-align: center;
+        }
+
+        .cards {
+            display: flex;
+            gap: 14px;
+            justify-content: center;
+            flex-wrap: wrap;
+            padding: 18px 0;
+        }
+
+        .card {
+            min-width: 200px;
+            width: 1fr;
+            flex: 1 1 260px;
+            max-width: 320px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.018), rgba(255,255,255,0.01));
+            border-radius: var(--card-radius);
+            padding: 20px;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 6px 26px rgba(2,6,23,0.6);
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 8px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(6px) saturate(120%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .light-theme .card {
+            background: linear-gradient(180deg, rgba(255,255,255,0.8), rgba(255,255,255,0.7));
+            border: 1px solid rgba(0,0,0,0.1);
+            box-shadow: 0 6px 26px rgba(0,0,0,0.1);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(0,212,255,0.05), rgba(106,92,255,0.05));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .light-theme .card::before {
+            background: linear-gradient(135deg, rgba(0,102,204,0.05), rgba(74,60,255,0.05));
+        }
+
+        .card:hover::before {
+            opacity: 1;
+        }
+
+        .card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 18px 50px rgba(0,0,0,0.55), 0 0 20px rgba(0,212,255,0.1);
+            border-color: rgba(0,212,255,0.2);
+        }
+
+        .light-theme .card:hover {
+            box-shadow: 0 18px 50px rgba(0,0,0,0.2), 0 0 20px rgba(0,102,204,0.1);
+            border-color: rgba(0,102,204,0.2);
+        }
+
+        .card .k {
+            font-size: 32px;
+            font-weight: 700;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(0,212,255,0.5);
+        }
+
+        .light-theme .card .k {
+            color: #333;
+            text-shadow: none;
+        }
+
+        .card .t {
+            font-size: 14px;
+            color: var(--muted);
+        }
+
+        .panel-wrap {
+            background: linear-gradient(180deg, rgba(255,255,255,0.012), rgba(255,255,255,0.008));
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid var(--glass-border);
+            min-height: 420px;
+            box-shadow: 0 12px 40px rgba(2,6,23,0.6);
+            transition: all 0.3s ease;
+        }
+
+        .light-theme .panel-wrap {
+            background: linear-gradient(180deg, rgba(255,255,255,0.8), rgba(255,255,255,0.7));
+            border: 1px solid rgba(0,0,0,0.1);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.1);
+        }
+
+        .panel-wrap:hover {
+            box-shadow: 0 15px 50px rgba(2,6,23,0.8);
+        }
+
+        .light-theme .panel-wrap:hover {
+            box-shadow: 0 15px 50px rgba(0,0,0,0.2);
+        }
+
+        .panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .panel-header h3 {
+            margin: 0;
+            color: #fff;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .light-theme .panel-header h3 {
+            color: #333;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .table-shell {
+            background: linear-gradient(180deg, rgba(255,255,255,0.006), rgba(255,255,255,0.004));
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.03);
+            transition: all 0.3s ease;
+        }
+
+        .light-theme .table-shell {
+            background: linear-gradient(180deg, rgba(255,255,255,0.8), rgba(255,255,255,0.7));
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .table-shell:hover {
+            border-color: rgba(255,255,255,0.05);
+        }
+
+        .light-theme .table-shell:hover {
+            border-color: rgba(0,0,0,0.1);
+        }
+
+        .table-tools {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+
+        .search {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .search input {
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.04);
+            padding: 10px 14px;
+            border-radius: 10px;
+            color: #dfefff;
+            min-width: 220px;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .light-theme .search input {
+            border: 1px solid rgba(0,0,0,0.1);
+            color: #333;
+        }
+
+        .search input:focus {
+            outline: none;
+            border-color: rgba(0,212,255,0.3);
+            box-shadow: 0 0 10px rgba(0,212,255,0.1);
+        }
+
+        .light-theme .search input:focus {
+            border-color: rgba(0,102,204,0.3);
+            box-shadow: 0 0 10px rgba(0,102,204,0.1);
+        }
+
+        .select-page {
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.04);
+            padding: 10px;
+            border-radius: 10px;
+            color: #dfefff;
+            transition: all 0.3s ease;
+        }
+
+        .light-theme .select-page {
+            border: 1px solid rgba(0,0,0,0.1);
+            color: #333;
+        }
+
+        .select-page:focus {
+            outline: none;
+            border-color: rgba(0,212,255,0.3);
+        }
+
+        .light-theme .select-page:focus {
+            border-color: rgba(0,102,204,0.3);
+        }
+
+        table.app-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 720px;
+        }
+
+        table.app-table thead th {
+            font-weight: 600;
+            padding: 14px 12px;
+            background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+            color: #cfefff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .light-theme table.app-table thead th {
+            background: linear-gradient(90deg, rgba(0,0,0,0.02), rgba(0,0,0,0.01));
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            color: #333;
+        }
+
+        table.app-table thead th:hover {
+            background: linear-gradient(90deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
+            color: #fff;
+        }
+
+        .light-theme table.app-table thead th:hover {
+            background: linear-gradient(90deg, rgba(0,0,0,0.03), rgba(0,0,0,0.02));
+            color: #000;
+        }
+
+        table.app-table thead th i {
+            margin-right: 6px;
+            transition: all 0.3s ease;
+        }
+
+        table.app-table thead th:hover i {
+            color: var(--accent);
+        }
+
+        table.app-table tbody td {
+            padding: 14px 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.02);
+            color: #dbeeff;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .light-theme table.app-table tbody td {
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            color: #333;
+        }
+
+        table.app-table tbody tr {
+            transition: all 0.3s ease;
+        }
+
+        table.app-table tbody tr:hover {
+            background: linear-gradient(90deg, rgba(0,212,255,0.02), rgba(106,92,255,0.02));
+            transform: translateX(6px) scale(1.01);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .light-theme table.app-table tbody tr:hover {
+            background: linear-gradient(90deg, rgba(0,102,204,0.02), rgba(74,60,255,0.02));
+        }
+
+        .badge {
+            padding: 6px 12px;
+            border-radius: 999px;
+            font-weight: 700;
+            font-size: 12px;
+            color: #041025;
+            transition: all 0.3s ease;
+        }
+
+        .badge:hover {
+            transform: scale(1.05);
+        }
+
+        .badge.live {
+            background: linear-gradient(90deg, var(--accent), var(--accent-2));
+            box-shadow: 0 4px 10px rgba(0,212,255,0.3);
+        }
+
+        .badge.pending {
+            background: var(--warning);
+            color: #0b0b0b;
+            box-shadow: 0 4px 10px rgba(255,176,32,0.3);
+        }
+
+        .badge.completed {
+            background: var(--success);
+            color: #02210a;
+            box-shadow: 0 4px 10px rgba(40,199,111,0.3);
+        }
+
+        .badge.blocked {
+            background: var(--danger);
+            color: #fff;
+            box-shadow: 0 4px 10px rgba(255,107,107,0.3);
+        }
+
+        .btn {
+            padding: 10px 14px;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .light-theme .btn::after {
+            background: linear-gradient(90deg, transparent, rgba(0,0,0,0.1), transparent);
+        }
+
+        .btn:hover::after {
+            left: 100%;
+        }
+
+        .btn i {
+            width: 14px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover i {
+            transform: scale(1.2);
+        }
+
+        .btn.edit {
+            background: linear-gradient(90deg, rgba(0,212,255,0.14), rgba(106,92,255,0.06));
+            color: var(--accent);
+            box-shadow: 0 6px 18px rgba(0,212,255,0.04);
+        }
+
+        .light-theme .btn.edit {
+            background: linear-gradient(90deg, rgba(0,102,204,0.14), rgba(74,60,255,0.06));
+            color: var(--accent);
+        }
+
+        .btn.edit:hover {
+            background: linear-gradient(90deg, rgba(0,212,255,0.2), rgba(106,92,255,0.1));
+            color: #fff;
+            box-shadow: 0 8px 25px rgba(0,212,255,0.2);
+            transform: translateY(-3px);
+        }
+
+        .light-theme .btn.edit:hover {
+            background: linear-gradient(90deg, rgba(0,102,204,0.2), rgba(74,60,255,0.1));
+            color: #000;
+        }
+
+        .btn.del {
+            background: linear-gradient(90deg, rgba(255,107,107,0.08), rgba(255,107,107,0.03));
+            color: var(--danger);
+        }
+
+        .btn.del:hover {
+            background: linear-gradient(90deg, rgba(255,107,107,0.15), rgba(255,107,107,0.08));
+            color: #fff;
+            box-shadow: 0 8px 25px rgba(255,107,107,0.2);
+            transform: translateY(-3px);
+        }
+
+        .light-theme .btn.del:hover {
+            color: #000;
+        }
+
+        .btn.admin {
+            background: linear-gradient(90deg, rgba(40,199,111,0.12), rgba(40,199,111,0.04));
+            color: var(--success);
+        }
+
+        .btn.admin:hover {
+            background: linear-gradient(90deg, rgba(40,199,111,0.2), rgba(40,199,111,0.1));
+            color: #fff;
+            box-shadow: 0 8px 25px rgba(40,199,111,0.2);
+            transform: translateY(-3px);
+        }
+
+        .light-theme .btn.admin:hover {
+            color: #000;
+        }
+
+        .btn.member {
+            background: linear-gradient(90deg, rgba(255,176,32,0.12), rgba(255,176,32,0.04));
+            color: var(--warning);
+        }
+
+        .btn.member:hover {
+            background: linear-gradient(90deg, rgba(255,176,32,0.2), rgba(255,176,32,0.1));
+            color: #fff;
+            box-shadow: 0 8px 25px rgba(255,176,32,0.2);
+            transform: translateY(-3px);
+        }
+
+        .light-theme .btn.member:hover {
+            color: #000;
+        }
+
+        .btn.view {
+            background: linear-gradient(90deg, rgba(106,92,255,0.12), rgba(106,92,255,0.04));
+            color: var(--accent-2);
+        }
+
+        .btn.view:hover {
+            background: linear-gradient(90deg, rgba(106,92,255,0.2), rgba(106,92,255,0.1));
+            color: #fff;
+            box-shadow: 0 8px 25px rgba(106,92,255,0.2);
+            transform: translateY(-3px);
+        }
+
+        .light-theme .btn.view:hover {
+            color: #000;
+        }
+
+        .btn.accept {
+            background: linear-gradient(90deg, rgba(40,199,111,0.12), rgba(40,199,111,0.04));
+            color: var(--success);
+        }
+
+        .btn.accept:hover {
+            background: linear-gradient(90deg, rgba(40,199,111,0.2), rgba(40,199,111,0.1));
+            color: #fff;
+            box-shadow: 0 8px 25px rgba(40,199,111,0.2);
+            transform: translateY(-3px);
+        }
+
+        .light-theme .btn.accept:hover {
+            color: #000;
+        }
+
+        .btn.reject {
+            background: linear-gradient(90deg, rgba(255,107,107,0.12), rgba(255,107,107,0.04));
+            color: var(--danger);
+        }
+
+        .btn.reject:hover {
+            background: linear-gradient(90deg, rgba(255,107,107,0.2), rgba(255,107,107,0.1));
+            color: #fff;
+            box-shadow: 0 8px 25px rgba(255,107,107,0.2);
+            transform: translateY(-3px);
+        }
+
+        .light-theme .btn.reject:hover {
+            color: #000;
+        }
+
+        .add-prominent {
+            background: linear-gradient(90deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+            border: 1px solid rgba(255,255,255,0.06);
+            padding: 12px 16px;
+            border-radius: 12px;
+            color: #eaf6ff;
+            font-weight: 800;
+            box-shadow: 0 10px 30px rgba(12,18,28,0.6);
+            backdrop-filter: blur(8px) saturate(120%);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .light-theme .add-prominent {
+            background: linear-gradient(90deg, rgba(0,0,0,0.03), rgba(0,0,0,0.01));
+            border: 1px solid rgba(0,0,0,0.06);
+            color: #333;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .add-prominent:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(12,18,28,0.8), 0 0 20px rgba(0,212,255,0.2);
+            border-color: rgba(0,212,255,0.3);
+        }
+
+        .light-theme .add-prominent:hover {
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2), 0 0 20px rgba(0,102,204,0.2);
+            border-color: rgba(0,102,204,0.3);
+        }
+
+        .add-prominent i {
+            margin-right: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .add-prominent:hover i {
+            transform: scale(1.2);
+            color: var(--accent);
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .avatar:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 15px rgba(0,212,255,0.5);
+        }
+
+        .light-theme .avatar:hover {
+            box-shadow: 0 0 15px rgba(0,102,204,0.5);
+        }
+
+        .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .pagination {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            justify-content: flex-end;
+            margin-top: 15px;
+        }
+
+        .page-btn {
+            padding: 8px 12px;
+            border-radius: 8px;
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.03);
+            color: var(--muted);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .light-theme .page-btn {
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .page-btn:hover {
+            background: linear-gradient(90deg, rgba(0,212,255,0.06), rgba(106,92,255,0.04));
+            color: #fff;
+            transform: translateY(-2px);
+        }
+
+        .light-theme .page-btn:hover {
+            background: linear-gradient(90deg, rgba(0,102,204,0.06), rgba(74,60,255,0.04));
+            color: #000;
+        }
+
+        .page-btn.active {
+            background: linear-gradient(90deg, rgba(0,212,255,0.06), rgba(106,92,255,0.04));
+            color: #fff;
+            box-shadow: 0 4px 10px rgba(0,212,255,0.2);
+        }
+
+        .light-theme .page-btn.active {
+            background: linear-gradient(90deg, rgba(0,102,204,0.06), rgba(74,60,255,0.04));
+            color: #000;
+            box-shadow: 0 4px 10px rgba(0,102,204,0.2);
+        }
+
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(rgba(2,6,23,0.7), rgba(2,6,23,0.7));
+            z-index: 1200;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .light-theme .modal-backdrop {
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5));
+        }
+
+        .modal-card {
+            width: 520px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid rgba(255,255,255,0.03);
+            box-shadow: 0 12px 40px rgba(2,6,23,0.6);
+            animation: scaleIn 0.3s ease;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .light-theme .modal-card {
+            background: linear-gradient(180deg, rgba(255,255,255,0.9), rgba(255,255,255,0.8));
+            border: 1px solid rgba(0,0,0,0.1);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.1);
+        }
+
+        @keyframes scaleIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .modal-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-top: 12px;
+        }
+
+        .modal-row input, .modal-row select, .modal-row textarea {
+            flex: 1;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.04);
+            background: transparent;
+            color: #dfefff;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .light-theme .modal-row input, .light-theme .modal-row select, .light-theme .modal-row textarea {
+            border: 1px solid rgba(0,0,0,0.1);
+            color: #333;
+        }
+
+        .modal-row input:focus, .modal-row select:focus, .modal-row textarea:focus {
+            outline: none;
+            border-color: rgba(0,212,255,0.3);
+            box-shadow: 0 0 10px rgba(0,212,255,0.1);
+        }
+
+        .light-theme .modal-row input:focus, .light-theme .modal-row select:focus, .light-theme .modal-row textarea:focus {
+            border-color: rgba(0,102,204,0.3);
+            box-shadow: 0 0 10px rgba(0,102,204,0.1);
+        }
+
+        .modal-card.prominent {
+            background: linear-gradient(180deg, rgba(255,255,255,0.032), rgba(255,255,255,0.014));
+            box-shadow: 0 18px 56px rgba(0,0,0,0.6);
+            border: 1px solid rgba(255,255,255,0.06);
+            backdrop-filter: blur(10px) saturate(130%);
+        }
+
+        .light-theme .modal-card.prominent {
+            background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(255,255,255,0.85));
+            border: 1px solid rgba(0,0,0,0.1);
+            box-shadow: 0 18px 56px rgba(0,0,0,0.1);
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(90deg, var(--accent-soft), rgba(106,92,255,0.06));
+            color: #fff;
+            padding: 12px 18px;
+            border-radius: 10px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+            z-index: 10000;
+            font-weight: 600;
+            backdrop-filter: blur(8px) saturate(120%);
+            border: 1px solid rgba(255,255,255,0.06);
+            animation: slideIn 0.3s ease;
+        }
+
+        .light-theme .notification {
+            background: linear-gradient(90deg, rgba(0,102,204,0.1), rgba(74,60,255,0.06));
+            color: #333;
+            border: 1px solid rgba(0,0,0,0.1);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* Form field enhancements */
+        .form-group {
+            margin-bottom: 16px;
+            position: relative;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 6px;
+            color: var(--muted);
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.04);
+            background: transparent;
+            color: #dfefff;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .light-theme .form-input {
+            border: 1px solid rgba(0,0,0,0.1);
+            color: #333;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: rgba(0,212,255,0.3);
+            box-shadow: 0 0 15px rgba(0,212,255,0.1);
+            transform: translateY(-2px);
+        }
+
+        .light-theme .form-input:focus {
+            border-color: rgba(0,102,204,0.3);
+            box-shadow: 0 0 15px rgba(0,102,204,0.1);
+        }
+
+        .form-input:hover {
+            border-color: rgba(255,255,255,0.08);
+        }
+
+        .light-theme .form-input:hover {
+            border-color: rgba(0,0,0,0.2);
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.04);
+            background: transparent;
+            color: #dfefff;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .light-theme .form-select {
+            border: 1px solid rgba(0,0,0,0.1);
+            color: #333;
+        }
+
+        .form-select:focus {
+            outline: none;
+            border-color: rgba(0,212,255,0.3);
+            box-shadow: 0 0 15px rgba(0,212,255,0.1);
+            transform: translateY(-2px);
+        }
+
+        .light-theme .form-select:focus {
+            border-color: rgba(0,102,204,0.3);
+            box-shadow: 0 0 15px rgba(0,102,204,0.1);
+        }
+
+        .form-textarea {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.04);
+            background: transparent;
+            color: #dfefff;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .light-theme .form-textarea {
+            border: 1px solid rgba(0,0,0,0.1);
+            color: #333;
+        }
+
+        .form-textarea:focus {
+            outline: none;
+            border-color: rgba(0,212,255,0.3);
+            box-shadow: 0 0 15px rgba(0,212,255,0.1);
+            transform: translateY(-2px);
+        }
+
+        .light-theme .form-textarea:focus {
+            border-color: rgba(0,102,204,0.3);
+            box-shadow: 0 0 15px rgba(0,102,204,0.1);
+        }
+
+        .form-section {
+            margin-bottom: 24px;
+            padding: 16px;
+            border-radius: 12px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005));
+            border: 1px solid rgba(255,255,255,0.03);
+            transition: all 0.3s ease;
+        }
+
+        .light-theme .form-section {
+            background: linear-gradient(180deg, rgba(255,255,255,0.8), rgba(255,255,255,0.7));
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .form-section:hover {
+            border-color: rgba(255,255,255,0.05);
+            transform: translateY(-2px);
+        }
+
+        .light-theme .form-section:hover {
+            border-color: rgba(0,0,0,0.1);
+        }
+
+        .form-section-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .light-theme .form-section-title {
+            color: #333;
+        }
+
+        .form-section-title i {
+            color: var(--accent);
+        }
+
+        /* Enhanced Team Member Cards - 5 cards per row */
+        .team-member-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 20px;
+            margin-top: 16px;
+        }
+
+        .team-member-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+            border-radius: var(--card-radius);
+            padding: 24px 20px;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 6px 26px rgba(2,6,23,0.6);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+            transition: all 0.4s ease;
+            backdrop-filter: blur(8px) saturate(120%);
+            position: relative;
+            overflow: hidden;
+            text-align: center;
+        }
+
+        .light-theme .team-member-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.8), rgba(255,255,255,0.7));
+            border: 1px solid rgba(0,0,0,0.1);
+            box-shadow: 0 6px 26px rgba(0,0,0,0.1);
+        }
+
+        .team-member-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(0,212,255,0.08), rgba(106,92,255,0.08));
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .light-theme .team-member-card::before {
+            background: linear-gradient(135deg, rgba(0,102,204,0.08), rgba(74,60,255,0.08));
+        }
+
+        .team-member-card:hover::before {
+            opacity: 1;
+        }
+
+        .team-member-card:hover {
+            transform: translateY(-8px) scale(1.03);
+            box-shadow: 0 18px 50px rgba(0,0,0,0.55), 0 0 20px rgba(0,212,255,0.2);
+            border-color: rgba(0,212,255,0.3);
+        }
+
+        .light-theme .team-member-card:hover {
+            box-shadow: 0 18px 50px rgba(0,0,0,0.2), 0 0 20px rgba(0,102,204,0.2);
+            border-color: rgba(0,102,204,0.3);
+        }
+
+        .team-member-card .avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            position: relative;
+            z-index: 1;
+            box-shadow: 0 0 20px rgba(0,212,255,0.3);
+            transition: all 0.4s ease;
+            border: 3px solid rgba(255,255,255,0.1);
+        }
+
+        .light-theme .team-member-card .avatar {
+            box-shadow: 0 0 20px rgba(0,102,204,0.3);
+            border: 3px solid rgba(0,0,0,0.1);
+        }
+
+        .team-member-card:hover .avatar {
+            transform: scale(1.1);
+            box-shadow: 0 0 30px rgba(0,212,255,0.5);
+            border-color: rgba(0,212,255,0.3);
+        }
+
+        .light-theme .team-member-card:hover .avatar {
+            box-shadow: 0 0 30px rgba(0,102,204,0.5);
+            border-color: rgba(0,102,204,0.3);
+        }
+
+        .team-member-card .name {
+            font-size: 18px;
+            font-weight: 700;
+            color: #fff;
+            position: relative;
+            z-index: 1;
+        }
+
+        .light-theme .team-member-card .name {
+            color: #333;
+        }
+
+        .team-member-card .role-badge {
+            padding: 4px 12px;
+            border-radius: 999px;
+            font-weight: 700;
+            font-size: 11px;
+            color: #041025;
+            position: relative;
+            z-index: 1;
+        }
+
+        .team-member-card .role-badge.admin {
+            background: linear-gradient(90deg, var(--accent), var(--accent-2));
+            box-shadow: 0 4px 10px rgba(0,212,255,0.3);
+        }
+
+        .team-member-card .role-badge.manager {
+            background: var(--warning);
+            color: #0b0b0b;
+            box-shadow: 0 4px 10px rgba(255,176,32,0.3);
+        }
+
+        .team-member-card .role-badge.member {
+            background: var(--success);
+            color: #02210a;
+            box-shadow: 0 4px 10px rgba(40,199,111,0.3);
+        }
+
+        .team-member-card .specialization {
+            font-size: 14px;
+            color: var(--accent);
+            position: relative;
+            z-index: 1;
+            font-weight: 600;
+        }
+
+        .team-member-card .bio {
+            font-size: 13px;
+            color: var(--muted);
+            position: relative;
+            z-index: 1;
+            line-height: 1.4;
+            max-height: 40px;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            line-clamp: 2;
+        }
+
+        .team-member-card .stats {
+            display: flex;
+            gap: 12px;
+            position: relative;
+            z-index: 1;
+            margin-top: 8px;
+        }
+
+        .team-member-card .stat {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .team-member-card .stat-value {
+            font-size: 16px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .light-theme .team-member-card .stat-value {
+            color: #333;
+        }
+
+        .team-member-card .stat-label {
+            font-size: 11px;
+            color: var(--muted);
+        }
+
+        .team-member-card .actions {
+            display: flex;
+            gap: 8px;
+            position: relative;
+            z-index: 1;
+            margin-top: 8px;
+        }
+
+        /* Earnings Card on Profile Panel */
+        .earnings-card {
+            background: linear-gradient(135deg, rgba(40,199,111,0.1), rgba(40,199,111,0.05));
+            border-radius: var(--card-radius);
+            padding: 24px;
+            border: 1px solid rgba(40,199,111,0.2);
+            box-shadow: 0 8px 30px rgba(40,199,111,0.15);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            transition: all 0.4s ease;
+            backdrop-filter: blur(6px) saturate(120%);
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .light-theme .earnings-card {
+            background: linear-gradient(135deg, rgba(29,167,80,0.1), rgba(29,167,80,0.05));
+            border: 1px solid rgba(29,167,80,0.2);
+            box-shadow: 0 8px 30px rgba(29,167,80,0.15);
+        }
+
+        .earnings-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(40,199,111,0.15), rgba(40,199,111,0.08));
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .light-theme .earnings-card::before {
+            background: linear-gradient(135deg, rgba(29,167,80,0.15), rgba(29,167,80,0.08));
+        }
+
+        .earnings-card:hover::before {
+            opacity: 1;
+        }
+
+        .earnings-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 18px 50px rgba(40,199,111,0.25), 0 0 20px rgba(40,199,111,0.2);
+            border-color: rgba(40,199,111,0.4);
+        }
+
+        .light-theme .earnings-card:hover {
+            box-shadow: 0 18px 50px rgba(29,167,80,0.25), 0 0 20px rgba(29,167,80,0.2);
+            border-color: rgba(29,167,80,0.4);
+        }
+
+        .earnings-card .amount {
+            font-size: 42px;
+            font-weight: 800;
+            color: #fff;
+            text-shadow: 0 0 15px rgba(40,199,111,0.7);
+            animation: pulse 2s infinite;
+        }
+
+        .light-theme .earnings-card .amount {
+            color: #333;
+            text-shadow: 0 0 15px rgba(29,167,80,0.7);
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .earnings-card .label {
+            font-size: 18px;
+            color: #fff;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .light-theme .earnings-card .label {
+            color: #333;
+        }
+
+        .earnings-card .sub-label {
+            font-size: 14px;
+            color: rgba(255,255,255,0.7);
+            text-align: center;
+        }
+
+        .light-theme .earnings-card .sub-label {
+            color: rgba(0,0,0,0.7);
+        }
+
+        .earnings-card .icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+            color: rgba(255,255,255,0.9);
+        }
+
+        .light-theme .earnings-card .icon {
+            color: rgba(0,0,0,0.9);
+        }
+
+        /* Information Cards on Profile Panel */
+        .info-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .info-card {
+            background: linear-gradient(135deg, rgba(0,212,255,0.08), rgba(106,92,255,0.08));
+            border-radius: var(--card-radius);
+            padding: 20px;
+            border: 1px solid rgba(0,212,255,0.2);
+            box-shadow: 0 8px 30px rgba(0,212,255,0.15);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.4s ease;
+            backdrop-filter: blur(6px) saturate(120%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .light-theme .info-card {
+            background: linear-gradient(135deg, rgba(0,102,204,0.08), rgba(74,60,255,0.08));
+            border: 1px solid rgba(0,102,204,0.2);
+            box-shadow: 0 8px 30px rgba(0,102,204,0.15);
+        }
+
+        .info-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(0,212,255,0.1), rgba(106,92,255,0.1));
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .light-theme .info-card::before {
+            background: linear-gradient(135deg, rgba(0,102,204,0.1), rgba(74,60,255,0.1));
+        }
+
+        .info-card:hover::before {
+            opacity: 1;
+        }
+
+        .info-card:hover {
+            transform: translateY(-8px) scale(1.03);
+            box-shadow: 0 18px 50px rgba(0,212,255,0.25), 0 0 20px rgba(0,212,255,0.2);
+            border-color: rgba(0,212,255,0.4);
+        }
+
+        .light-theme .info-card:hover {
+            box-shadow: 0 18px 50px rgba(0,102,204,0.25), 0 0 20px rgba(0,102,204,0.2);
+            border-color: rgba(0,102,204,0.4);
+        }
+
+        .info-card .value {
+            font-size: 32px;
+            font-weight: 800;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(0,212,255,0.7);
+        }
+
+        .light-theme .info-card .value {
+            color: #333;
+            text-shadow: 0 0 10px rgba(0,102,204,0.7);
+        }
+
+        .info-card .label {
+            font-size: 14px;
+            color: #fff;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .light-theme .info-card .label {
+            color: #333;
+        }
+
+        .info-card .icon {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: rgba(255,255,255,0.9);
+        }
+
+        .light-theme .info-card .icon {
+            color: rgba(0,0,0,0.9);
+        }
+
+        /* Enhanced Profile Section */
+        .profile-header {
+            display: flex;
+            gap: 24px;
+            align-items: flex-start;
+            margin-bottom: 24px;
+        }
+
+        .profile-avatar-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .profile-avatar {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            overflow: hidden;
+            box-shadow: 0 0 25px rgba(0,212,255,0.4);
+            transition: all 0.4s ease;
+            border: 3px solid rgba(255,255,255,0.1);
+        }
+
+        .light-theme .profile-avatar {
+            box-shadow: 0 0 25px rgba(0,102,204,0.4);
+            border: 3px solid rgba(0,0,0,0.1);
+        }
+
+        .profile-avatar:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 35px rgba(0,212,255,0.6);
+        }
+
+        .light-theme .profile-avatar:hover {
+            box-shadow: 0 0 35px rgba(0,102,204,0.6);
+        }
+
+        .profile-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-info-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .profile-info-row {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .profile-info-item {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        /* Enhanced Messages Panel with Two Inboxes */
+        .messages-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+        }
+
+        .light-theme .messages-tabs {
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .messages-tab {
+            padding: 12px 20px;
+            background: transparent;
+            border: none;
+            color: var(--muted);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            border-bottom: 2px solid transparent;
+        }
+
+        .messages-tab.active {
+            color: var(--accent);
+            border-bottom: 2px solid var(--accent);
+        }
+
+        .messages-tab:hover {
+            color: #fff;
+        }
+
+        .light-theme .messages-tab:hover {
+            color: #000;
+        }
+
+        .messages-tab-badge {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 8px;
+            height: 8px;
+            background: var(--danger);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .messages-container {
+            display: flex;
+            flex-direction: column;
+            height: 500px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005));
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.03);
+            overflow: hidden;
+        }
+
+        .light-theme .messages-container {
+            background: linear-gradient(180deg, rgba(255,255,255,0.8), rgba(255,255,255,0.7));
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .messages-header {
+            padding: 16px;
+            background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .light-theme .messages-header {
+            background: linear-gradient(90deg, rgba(0,0,0,0.02), rgba(0,0,0,0.01));
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .messages-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .message {
+            padding: 12px 16px;
+            border-radius: 12px;
+            max-width: 70%;
+            position: relative;
+            animation: messageSlide 0.3s ease;
+        }
+
+        @keyframes messageSlide {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message.own {
+            align-self: flex-end;
+            background: linear-gradient(90deg, rgba(0,212,255,0.1), rgba(106,92,255,0.05));
+            border: 1px solid rgba(0,212,255,0.1);
+        }
+
+        .light-theme .message.own {
+            background: linear-gradient(90deg, rgba(0,102,204,0.1), rgba(74,60,255,0.05));
+            border: 1px solid rgba(0,102,204,0.1);
+        }
+
+        .message.other {
+            align-self: flex-start;
+            background: linear-gradient(90deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .light-theme .message.other {
+            background: linear-gradient(90deg, rgba(0,0,0,0.03), rgba(0,0,0,0.01));
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .message-sender {
+            font-weight: 600;
+            margin-bottom: 4px;
+            font-size: 13px;
+        }
+
+        .message-text {
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .message-time {
+            font-size: 11px;
+            color: var(--muted);
+            text-align: right;
+            margin-top: 4px;
+        }
+
+        .message-input-area {
+            padding: 16px;
+            background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+            border-top: 1px solid rgba(255,255,255,0.03);
+            display: flex;
+            gap: 12px;
+        }
+
+        .light-theme .message-input-area {
+            background: linear-gradient(90deg, rgba(0,0,0,0.02), rgba(0,0,0,0.01));
+            border-top: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .message-input {
+            flex: 1;
+            padding: 12px 16px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.04);
+            background: transparent;
+            color: #dfefff;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .light-theme .message-input {
+            border: 1px solid rgba(0,0,0,0.1);
+            color: #333;
+        }
+
+        .message-input:focus {
+            outline: none;
+            border-color: rgba(0,212,255,0.3);
+            box-shadow: 0 0 10px rgba(0,212,255,0.1);
+        }
+
+        .light-theme .message-input:focus {
+            border-color: rgba(0,102,204,0.3);
+            box-shadow: 0 0 10px rgba(0,102,204,0.1);
+        }
+
+        .send-message-btn {
+            padding: 12px 20px;
+            border-radius: 10px;
+            background: linear-gradient(90deg, var(--accent), var(--accent-2));
+            border: none;
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .send-message-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(106,92,255,0.4);
+        }
+
+        .light-theme .send-message-btn:hover {
+            box-shadow: 0 6px 20px rgba(74,60,255,0.4);
+        }
+
+        /* File Upload Styles */
+        .file-upload-area {
+            border: 2px dashed rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            margin-bottom: 16px;
+        }
+
+        .light-theme .file-upload-area {
+            border: 2px dashed rgba(0,0,0,0.1);
+        }
+
+        .file-upload-area:hover {
+            border-color: rgba(0,212,255,0.3);
+            background: rgba(0,212,255,0.05);
+        }
+
+        .light-theme .file-upload-area:hover {
+            border-color: rgba(0,102,204,0.3);
+            background: rgba(0,102,204,0.05);
+        }
+
+        .file-upload-area i {
+            font-size: 32px;
+            color: var(--accent);
+            margin-bottom: 8px;
+        }
+
+        .file-upload-text {
+            font-size: 14px;
+            color: var(--muted);
+            margin-bottom: 12px;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .file-upload-btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            background: linear-gradient(90deg, rgba(0,212,255,0.1), rgba(106,92,255,0.05));
+            border: 1px solid rgba(0,212,255,0.2);
+            color: var(--accent);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .light-theme .file-upload-btn {
+            background: linear-gradient(90deg, rgba(0,102,204,0.1), rgba(74,60,255,0.05));
+            border: 1px solid rgba(0,102,204,0.2);
+        }
+
+        .file-upload-btn:hover {
+            background: linear-gradient(90deg, rgba(0,212,255,0.15), rgba(106,92,255,0.1));
+        }
+
+        .light-theme .file-upload-btn:hover {
+            background: linear-gradient(90deg, rgba(0,102,204,0.15), rgba(74,60,255,0.1));
+        }
+
+        .file-preview {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .file-preview-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 10px;
+            border-radius: 6px;
+            background: rgba(255,255,255,0.05);
+            font-size: 12px;
+        }
+
+        .light-theme .file-preview-item {
+            background: rgba(0,0,0,0.05);
+        }
+
+        .file-preview-item i {
+            color: var(--accent);
+        }
+
+        /* Progress Update Modal */
+        .progress-update-modal {
+            width: 400px;
+        }
+
+        .progress-slider-container {
+            margin: 20px 0;
+        }
+
+        .progress-slider {
+            width: 100%;
+            height: 10px;
+            border-radius: 5px;
+            background: rgba(255,255,255,0.1);
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .light-theme .progress-slider {
+            background: rgba(0,0,0,0.1);
+        }
+
+        .progress-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--accent);
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(0,212,255,0.5);
+        }
+
+        .light-theme .progress-slider::-webkit-slider-thumb {
+            box-shadow: 0 0 10px rgba(0,102,204,0.5);
+        }
+
+        .progress-slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--accent);
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(0,212,255,0.5);
+            border: none;
+        }
+
+        .light-theme .progress-slider::-moz-range-thumb {
+            box-shadow: 0 0 10px rgba(0,102,204,0.5);
+        }
+
+        .progress-value {
+            text-align: center;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--accent);
+            margin: 10px 0;
+        }
+
+        .progress-visual {
+            width: 100%;
+            height: 20px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .light-theme .progress-visual {
+            background: rgba(0,0,0,0.1);
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), var(--accent-2));
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+
+        /* Enhanced Profile Picture Section */
+        .profile-picture-container {
+            position: relative;
+            width: 160px;
+            height: 160px;
+            margin: 0 auto 20px;
+        }
+
+        .profile-picture-frame {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+            padding: 6px;
+            box-shadow: 0 0 30px rgba(0,212,255,0.4);
+            transition: all 0.4s ease;
+        }
+
+        .light-theme .profile-picture-frame {
+            box-shadow: 0 0 30px rgba(0,102,204,0.4);
+        }
+
+        .profile-picture-frame:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 40px rgba(0,212,255,0.6);
+        }
+
+        .light-theme .profile-picture-frame:hover {
+            box-shadow: 0 0 40px rgba(0,102,204,0.6);
+        }
+
+        .profile-picture {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 3px solid rgba(255,255,255,0.1);
+        }
+
+        .light-theme .profile-picture {
+            border: 3px solid rgba(0,0,0,0.1);
+        }
+
+        .profile-picture img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-picture-edit {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,212,255,0.4);
+            transition: all 0.3s ease;
+        }
+
+        .profile-picture-edit:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(0,212,255,0.6);
+        }
+
+        .light-theme .profile-picture-edit:hover {
+            box-shadow: 0 6px 20px rgba(0,102,204,0.6);
+        }
+
+        @media (max-width: 1100px) {
+            .wrap {
+                padding: 18px;
+            }
+            .sidebar {
+                display: none;
+            }
+            .main {
+                padding: 0;
+            }
+            .modal-card {
+                width: 92%;
+            }
+            .team-member-cards {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            }
+        }
+
+        @media (max-width: 760px) {
+            .cards {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .table-shell {
+                overflow-x: auto;
+            }
+            .team-member-cards {
+                grid-template-columns: 1fr;
+            }
+            .info-cards {
+                grid-template-columns: 1fr;
+            }
+            .profile-header {
+                flex-direction: column;
+                align-items: center;
+            }
+            .profile-info-row {
+                flex-direction: column;
+            }
+            .message {
+                max-width: 85%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="wrap">
+        <!-- Sidebar -->
+        <aside class="sidebar" role="navigation">
+            <div class="brand">
+                <div class="logo">
+                    <img src="https://i.pravatar.cc/80?img=12" alt="Member Profile">
+                </div>
+                <div>
+                    <h2>Wave Portal</h2>
+                    <div style="font-size:12px;color:var(--muted)"><i class="fas fa-user"></i> Member</div>
+                </div>
+            </div>
+
+            <nav class="nav" aria-label="Main navigation">
+                <button class="active" data-target="dashboardPanel" onclick="switchPanel(event)"><i class="fas fa-tachometer-alt"></i> Dashboard</button>
+                <button data-target="teamMembersPanel" onclick="switchPanel(event)"><i class="fas fa-users"></i> Team Members</button>
+                <button data-target="availableProjectsPanel" onclick="switchPanel(event)"><i class="fas fa-project-diagram"></i> Available Projects</button>
+                <button data-target="myProjectsPanel" onclick="switchPanel(event)"><i class="fas fa-tasks"></i> My Projects</button>
+                <button data-target="paymentsPanel" onclick="switchPanel(event)"><i class="fas fa-credit-card"></i> Payment History</button>
+                <button data-target="messagesPanel" onclick="switchPanel(event)">
+                    <i class="fas fa-comments"></i> Messages
+                    <div class="nav-badge" id="messagesBadge" style="display:none"></div>
+                </button>
+                <button data-target="profilePanel" onclick="switchPanel(event)"><i class="fas fa-user"></i> Profile</button>
+            </nav>
+
+            <div class="footer">
+                <div style="font-size:13px;color:var(--muted)">Signed in as</div>
+                <div style="font-weight:700"><i class="fas fa-user"></i> John Doe • Member</div>
+                <div style="height:12px"></div>
+                <button class="logout" onclick="openLogoutModal()"><i class="fas fa-sign-out-alt"></i> Log Out</button>
+            </div>
+        </aside>
+
+        <!-- Main -->
+        <main class="main">
+            <header class="main-header">
+                <div class="title">
+                    <h1>Member Dashboard</h1>
+                    <p class="muted">Manage your projects, team, and payments</p>
+                </div>
+                <div class="top-actions">
+                    <div class="theme-switcher" onclick="toggleTheme()">
+                        <i class="fas fa-moon" id="themeIcon"></i> <span id="themeText">Light Mode</span>
+                    </div>
+                    <div class="profile-switcher" id="profileSwitcher" style="display:none">
+                        <button class="profile-switcher-btn" onclick="toggleProfileDropdown()">
+                            <i class="fas fa-user"></i> Switch Profile <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <div class="profile-dropdown" id="profileDropdown">
+                            <div class="profile-option" data-profile="admin" onclick="switchProfile('admin')">
+                                <i class="fas fa-user-shield"></i> Admin Dashboard
+                            </div>
+                            <div class="profile-option" data-profile="manager" onclick="switchProfile('manager')">
+                                <i class="fas fa-user-tie"></i> Manager Dashboard
+                            </div>
+                            <div class="profile-option active" data-profile="member" onclick="switchProfile('member')">
+                                <i class="fas fa-user"></i> Member Dashboard
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Cards (only visible on dashboard panel) -->
+            <section class="cards" id="cardsRow">
+                <div class="card" id="cardActiveProjects"><div class="k" id="kActiveProjects">0</div><div class="t"><i class="fas fa-tasks"></i> Active Projects</div></div>
+                <div class="card" id="cardCompleted"><div class="k" id="kCompleted">0</div><div class="t"><i class="fas fa-check-circle"></i> Completed</div></div>
+                <div class="card" id="cardEarnings"><div class="k" id="kEarnings">$0</div><div class="t"><i class="fas fa-dollar-sign"></i> Total Earnings</div></div>
+                <div class="card" id="cardTeam"><div class="k" id="kTeam">0</div><div class="t"><i class="fas fa-users"></i> Team Members</div></div>
+            </section>
+
+            <section class="panel-wrap">
+                <!-- Dashboard panel: recent activity table -->
+                <section class="panel show" id="dashboardPanel" style="display:block">
+                    <div class="panel-header">
+                        <h3><i class="fas fa-history"></i> Recent Activity</h3>
+                        <div class="controls muted"><i class="fas fa-bolt"></i> Live updates</div>
+                    </div>
+
+                    <div class="table-shell">
+                        <div class="table-tools" style="margin-bottom:8px">
+                            <div class="search"><input placeholder="Search activity..." id="activitySearch" oninput="renderActivityTable()" /></div>
+                            <div style="display:flex;gap:8px;align-items:center">
+                                <div class="muted"><i class="fas fa-eye"></i> Showing latest 20</div>
+                            </div>
+                        </div>
+
+                        <table class="app-table" id="activityTable">
+                            <thead>
+                                <tr>
+                                    <th><i class="fas fa-clock"></i> When</th>
+                                    <th><i class="fas fa-list"></i> Activity</th>
+                                    <th><i class="fas fa-tag"></i> Type</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- Team Members panel -->
+                <section class="panel" id="teamMembersPanel" style="display:none">
+                    <div class="panel-header">
+                        <h3><i class="fas fa-users"></i> Team Members</h3>
+                        <div class="controls muted">Connect with your team</div>
+                    </div>
+
+                    <div class="team-member-cards" id="teamMemberCards">
+                        <!-- Team member cards will be generated here -->
+                    </div>
+                </section>
+
+                <!-- Available Projects panel -->
+                <section class="panel" id="availableProjectsPanel" style="display:none">
+                    <div class="panel-header">
+                        <h3><i class="fas fa-project-diagram"></i> Available Projects</h3>
+                        <div class="controls muted">Projects you can apply for</div>
+                    </div>
+
+                    <div class="table-shell">
+                        <div class="table-tools" style="margin-bottom:10px">
+                            <div class="search"><input placeholder="Search projects..." data-table="availableProjectsTable" oninput="tableSearch(event)"></div>
+
+                            <select id="availableCategoryFilter" class="select-page" onchange="applyTableFilter('availableProjectsTable','category', this.value)">
+                                <option value="">All categories</option>
+                                <option value="Web Development">Web Development</option>
+                                <option value="Mobile App">Mobile App</option>
+                                <option value="Digital Marketing">Digital Marketing</option>
+                                <option value="Graphic Design">Graphic Design</option>
+                                <option value="SEO">SEO</option>
+                                <option value="Content Writing">Content Writing</option>
+                            </select>
+
+                            <select id="availablePriorityFilter" class="select-page" onchange="applyTableFilter('availableProjectsTable','priority', this.value)">
+                                <option value="">All priorities</option>
+                                <option value="Low">Low</option>
+                                <option value="Medium">Medium</option>
+                                <option value="High">High</option>
+                                <option value="Urgent">Urgent</option>
+                            </select>
+
+                            <select class="select-page" data-table="availableProjectsTable" onchange="tablePageSizeChange(event)">
+                                <option value="5">5 / page</option><option value="10" selected>10 / page</option><option value="25">25 / page</option>
+                            </select>
+                        </div>
+
+                        <table class="app-table" id="availableProjectsTable">
+                            <thead><tr data-table="availableProjectsTable">
+                                <th data-col="name"><i class="fas fa-file-signature"></i> Name</th>
+                                <th data-col="category"><i class="fas fa-tag"></i> Category</th>
+                                <th data-col="budget"><i class="fas fa-dollar-sign"></i> Budget</th>
+                                <th data-col="deadline"><i class="fas fa-calendar-alt"></i> Deadline</th>
+                                <th data-col="priority"><i class="fas fa-flag"></i> Priority</th>
+                                <th data-col="actions"><i class="fas fa-ellipsis-h"></i> Actions</th>
+                            </tr></thead>
+                            <tbody></tbody>
+                        </table>
+                        <div class="pagination" data-table="availableProjectsTable"></div>
+                    </div>
+                </section>
+
+                <!-- My Projects panel -->
+                <section class="panel" id="myProjectsPanel" style="display:none">
+                    <div class="panel-header">
+                        <h3><i class="fas fa-tasks"></i> My Projects</h3>
+                        <div class="controls muted">Projects you're working on</div>
+                    </div>
+
+                    <div class="table-shell">
+                        <div class="table-tools" style="margin-bottom:10px">
+                            <div class="search"><input placeholder="Search my projects..." data-table="myProjectsTable" oninput="tableSearch(event)"></div>
+
+                            <select id="myProjectsStatusFilter" class="select-page" onchange="applyTableFilter('myProjectsTable','status', this.value)">
+                                <option value="">All statuses</option>
+                                <option value="in progress">In Progress</option>
+                                <option value="completed">Completed</option>
+                                <option value="on hold">On Hold</option>
+                            </select>
+
+                            <select class="select-page" data-table="myProjectsTable" onchange="tablePageSizeChange(event)">
+                                <option value="5">5 / page</option><option value="10" selected>10 / page</option><option value="25">25 / page</option>
+                            </select>
+                        </div>
+
+                        <table class="app-table" id="myProjectsTable">
+                            <thead><tr data-table="myProjectsTable">
+                                <th data-col="name"><i class="fas fa-file-signature"></i> Name</th>
+                                <th data-col="category"><i class="fas fa-tag"></i> Category</th>
+                                <th data-col="budget"><i class="fas fa-dollar-sign"></i> Budget</th>
+                                <th data-col="deadline"><i class="fas fa-calendar-alt"></i> Deadline</th>
+                                <th data-col="status"><i class="fas fa-info-circle"></i> Status</th>
+                                <th data-col="progress"><i class="fas fa-chart-line"></i> Progress</th>
+                                <th data-col="actions"><i class="fas fa-ellipsis-h"></i> Actions</th>
+                            </tr></thead>
+                            <tbody></tbody>
+                        </table>
+                        <div class="pagination" data-table="myProjectsTable"></div>
+                    </div>
+                </section>
+
+                <!-- Payments panel -->
+                <section class="panel" id="paymentsPanel" style="display:none">
+                    <div class="panel-header">
+                        <h3><i class="fas fa-credit-card"></i> Payment History</h3>
+                        <div class="controls muted">Your payment details</div>
+                    </div>
+
+                    <div class="table-shell">
+                        <div class="table-tools" style="margin-bottom:10px">
+                            <div class="search"><input placeholder="Search payments..." data-table="paymentsTable" oninput="tableSearch(event)"></div>
+
+                            <select id="paymentsStatusFilter" class="select-page" onchange="applyTableFilter('paymentsTable','status', this.value)">
+                                <option value="">All status</option>
+                                <option value="pending">Pending</option>
+                                <option value="completed">Completed</option>
+                            </select>
+
+                            <select class="select-page" data-table="paymentsTable" onchange="tablePageSizeChange(event)">
+                                <option value="5">5 / page</option><option value="10" selected>10 / page</option><option value="25">25 / page</option>
+                            </select>
+                        </div>
+
+                        <table class="app-table" id="paymentsTable">
+                            <thead><tr data-table="paymentsTable">
+                                <th data-col="date"><i class="fas fa-calendar"></i> Date</th>
+                                <th data-col="amount"><i class="fas fa-dollar-sign"></i> Amount</th>
+                                <th data-col="project"><i class="fas fa-project-diagram"></i> Project</th>
+                                <th data-col="method"><i class="fas fa-credit-card"></i> Payment Method</th>
+                                <th data-col="status"><i class="fas fa-info-circle"></i> Status</th>
+                                <th data-col="actions"><i class="fas fa-ellipsis-h"></i> Actions</th>
+                            </tr></thead>
+                            <tbody></tbody>
+                        </table>
+                        <div class="pagination" data-table="paymentsTable"></div>
+                    </div>
+                </section>
+
+                <!-- Messages panel -->
+                <section class="panel" id="messagesPanel" style="display:none">
+                    <div class="panel-header">
+                        <h3><i class="fas fa-comments"></i> Messages</h3>
+                        <div class="controls muted">Communicate with your team and admins</div>
+                    </div>
+
+                    <div class="messages-tabs">
+                        <button class="messages-tab active" data-tab="global" onclick="switchMessageTab('global')">
+                            Global Chat
+                            <div class="messages-tab-badge" id="globalBadge" style="display:none"></div>
+                        </button>
+                        <button class="messages-tab" data-tab="admin" onclick="switchMessageTab('admin')">
+                            Admin (Project Discussion)
+                            <div class="messages-tab-badge" id="adminBadge" style="display:none"></div>
+                        </button>
+                    </div>
+
+                    <div class="messages-container">
+                        <div class="messages-header">
+                            <div>
+                                <h4 style="margin:0" id="messagesHeader">Global Chat</h4>
+                                <div style="font-size:12px;color:var(--muted)" id="messagesSubheader">Chat with all team members</div>
+                            </div>
+                            <div class="badge live" id="onlineStatus">Online: 5</div>
+                        </div>
+                        <div class="messages-list" id="messagesList">
+                            <!-- Messages will be loaded here -->
+                        </div>
+                        <div class="message-input-area">
+                            <input type="text" class="message-input" placeholder="Type your message here..." id="messageInput">
+                            <button class="send-message-btn" onclick="sendMessage()"><i class="fas fa-paper-plane"></i> Send</button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Profile panel -->
+                <section class="panel" id="profilePanel" style="display:none">
+                    <div class="panel-header">
+                        <h3><i class="fas fa-user"></i> Profile</h3>
+                        <div class="muted">Update your profile & work information</div>
+                    </div>
+                    
+                    <div class="profile-header">
+                        <div class="profile-avatar-section">
+                            <div class="profile-picture-container">
+                                <div class="profile-picture-frame">
+                                    <div class="profile-picture">
+                                        <img src="https://i.pravatar.cc/150?img=12" alt="Member Profile" id="memberProfileImage">
+                                    </div>
+                                </div>
+                                <div class="profile-picture-edit" onclick="changeProfileImage()">
+                                    <i class="fas fa-camera"></i>
+                                </div>
+                            </div>
+                            <button class="btn edit" onclick="changeProfileImage()"><i class="fas fa-camera"></i> Change Photo</button>
+                        </div>
+                        
+                        <div class="profile-info-section">
+                            <div class="profile-info-row">
+                                <div class="form-group profile-info-item">
+                                    <label class="form-label">Name</label>
+                                    <input class="form-input" id="memberName" placeholder="Member name" value="John Doe">
+                                </div>
+                                <div class="form-group profile-info-item">
+                                    <label class="form-label">Email</label>
+                                    <input class="form-input" id="memberEmail" placeholder="member@example.com" value="john@example.com">
+                                </div>
+                            </div>
+                            
+                            <div class="profile-info-row">
+                                <div class="form-group profile-info-item">
+                                    <label class="form-label">Specialization</label>
+                                    <input class="form-input" id="memberSpecialization" placeholder="e.g. Web Developer" value="Web Developer">
+                                </div>
+                                <div class="form-group profile-info-item">
+                                    <label class="form-label">Phone</label>
+                                    <input class="form-input" id="memberPhone" placeholder="+1 234 567 8900" value="+1 234 567 8901">
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Bio</label>
+                                <textarea class="form-textarea" id="memberBio" placeholder="Write something about yourself...">Full-stack developer with 3 years of experience in web development. Passionate about creating efficient and user-friendly applications.</textarea>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Earnings Card -->
+                    <div class="earnings-card">
+                        <div class="icon"><i class="fas fa-dollar-sign"></i></div>
+                        <div class="amount" id="profileEarnings">$0</div>
+                        <div class="label">Total Earnings</div>
+                        <div class="sub-label">From completed projects</div>
+                    </div>
+                    
+                    <!-- Information Cards -->
+                    <div class="info-cards">
+                        <div class="info-card">
+                            <div class="icon"><i class="fas fa-tasks"></i></div>
+                            <div class="value" id="profileActiveProjects">0</div>
+                            <div class="label">Active Projects</div>
+                        </div>
+                        <div class="info-card">
+                            <div class="icon"><i class="fas fa-check-circle"></i></div>
+                            <div class="value" id="profileCompletedProjects">0</div>
+                            <div class="label">Completed Projects</div>
+                        </div>
+                        <div class="info-card">
+                            <div class="icon"><i class="fas fa-clock"></i></div>
+                            <div class="value" id="profileHoursWorked">0</div>
+                            <div class="label">Hours Worked</div>
+                        </div>
+                        <div class="info-card">
+                            <div class="icon"><i class="fas fa-star"></i></div>
+                            <div class="value" id="profileRating">4.8</div>
+                            <div class="label">Rating</div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <div class="form-section-title"><i class="fas fa-money-bill-wave"></i> Payment Information</div>
+                        <div style="display:flex;gap:12px;flex-wrap:wrap">
+                            <div class="form-group" style="min-width:300px;flex:1">
+                                <label class="form-label">Payment Method</label>
+                                <select class="form-select" id="memberPaymentMethod">
+                                    <option value="Bank Transfer">Bank Transfer</option>
+                                    <option value="PayPal" selected>PayPal</option>
+                                    <option value="Stripe">Stripe</option>
+                                    <option value="Cash">Cash</option>
+                                </select>
+                            </div>
+                            <div class="form-group" style="min-width:300px;flex:1">
+                                <label class="form-label">Payment Address</label>
+                                <input class="form-input" id="memberPaymentAddress" placeholder="Payment receiving address" value="paypal.me/johndoe">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top:20px">
+                        <button class="btn edit" onclick="saveProfile()"><i class="fas fa-save"></i> Save Profile</button>
+                    </div>
+                </section>
+            </section>
+        </main>
+    </div>
+
+    <!-- Project Details Modal -->
+    <div id="projectModal" class="modal-backdrop" role="dialog" aria-hidden="true">
+        <div class="modal-card prominent" style="width: 700px;">
+            <h3 id="projectModalTitle"><i class="fas fa-project-diagram"></i> Project Details</h3>
+            <div id="projectModalBody"></div>
+            <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px">
+                <button class="btn del" onclick="closeProjectModal()"><i class="fas fa-times"></i> Close</button>
+                <button class="btn accept" id="projectModalAcceptBtn" style="display:none"><i class="fas fa-check"></i> Apply for Project</button>
+                <button class="btn admin" id="projectModalDiscussBtn" style="display:none"><i class="fas fa-comments"></i> Discuss Project</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Project Completion Modal -->
+    <div id="completionModal" class="modal-backdrop" role="dialog" aria-hidden="true">
+        <div class="modal-card prominent" style="width: 600px;">
+            <h3 id="completionModalTitle"><i class="fas fa-check-circle"></i> Complete Project</h3>
+            <div id="completionModalBody"></div>
+            <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px">
+                <button class="btn del" onclick="closeCompletionModal()"><i class="fas fa-times"></i> Cancel</button>
+                <button class="btn accept" id="completionModalSubmitBtn"><i class="fas fa-check"></i> Submit Completion</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Team Member Details Modal -->
+    <div id="memberModal" class="modal-backdrop" role="dialog" aria-hidden="true">
+        <div class="modal-card prominent" style="width: 500px;">
+            <h3 id="memberModalTitle"><i class="fas fa-user"></i> Team Member Details</h3>
+            <div id="memberModalBody"></div>
+            <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px">
+                <button class="btn del" onclick="closeMemberModal()"><i class="fas fa-times"></i> Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Progress Update Modal -->
+    <div id="progressModal" class="modal-backdrop" role="dialog" aria-hidden="true">
+        <div class="modal-card prominent progress-update-modal">
+            <h3 id="progressModalTitle"><i class="fas fa-chart-line"></i> Update Project Progress</h3>
+            <div id="progressModalBody"></div>
+            <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px">
+                <button class="btn del" onclick="closeProgressModal()"><i class="fas fa-times"></i> Cancel</button>
+                <button class="btn accept" id="progressModalSubmitBtn"><i class="fas fa-save"></i> Update Progress</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Logout Modal -->
+    <div id="logoutModal" class="modal-backdrop" role="dialog" aria-hidden="true">
+        <div class="modal-card prominent" style="width: 450px;">
+            <h3><i class="fas fa-sign-out-alt"></i> Confirm Logout</h3>
+            <div style="padding: 20px 0;">
+                <p style="color: var(--muted); margin-bottom: 20px;">Are you sure you want to log out? You will need to sign in again to access your dashboard.</p>
+            </div>
+            <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px">
+                <button class="btn del" onclick="closeLogoutModal()"><i class="fas fa-times"></i> Cancel</button>
+                <button class="btn accept" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Log Out</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div id="notification" class="notification" style="display:none"></div>
+
+    <script>
+        // State management for member dashboard
+        const MEMBER_STORAGE_KEY = 'wave_portal_member_state_v1';
+        
+        const defaultMemberSeed = {
+            member: {
+                id: 1,
+                name: 'John Doe',
+                email: 'john@example.com',
+                phone: '+1 234 567 8901',
+                avatar: 'https://i.pravatar.cc/80?img=12',
+                specialization: 'Web Developer',
+                bio: 'Full-stack developer with 3 years of experience in web development. Passionate about creating efficient and user-friendly applications.',
+                paymentMethod: 'PayPal',
+                paymentAddress: 'paypal.me/johndoe',
+                earnings: 1200,
+                projectsCompleted: 5,
+                hoursWorked: 320,
+                rating: 4.8,
+                canSwitchProfile: false // Admin permission required
+            },
+            teamMembers: [
+                {id:1, avatar:'https://i.pravatar.cc/150?img=60', name:'Sarah Johnson', email:'sarah@company.com', status:'active', role:'admin', specialization:'System Administrator', phone:'+1 234 567 8904', bio:'Experienced system administrator with 8+ years in IT infrastructure and security management.', joinDate:'2020-01-15', projectsCompleted: 25},
+                {id:2, avatar:'https://i.pravatar.cc/150?img=8', name:'Alice K', email:'alice@corp.com', status:'active', role:'manager', specialization:'Project Manager', phone:'+8801234567', bio:'Experienced project manager with PMP certification and 5+ years in team management and project coordination.', joinDate:'2022-05-10', projectsCompleted: 12},
+                {id:3, avatar:'https://i.pravatar.cc/150?img=14', name:'Maya Lee', email:'maya@example.com', status:'active', role:'manager', specialization:'Graphic Designer', phone:'+1 234 567 8902', bio:'Creative designer specializing in branding and UI/UX with a passion for minimalist design and user-centered approaches.', joinDate:'2023-03-22', projectsCompleted: 3},
+                {id:4, avatar:'https://i.pravatar.cc/150?img=12', name:'John Doe', email:'john@example.com', status:'active', role:'member', specialization:'Web Developer', phone:'+1 234 567 8901', bio:'Full-stack developer with 3 years of experience in web development. Passionate about creating efficient and user-friendly applications.', joinDate:'2023-01-15', projectsCompleted: 5},
+                {id:5, avatar:'https://i.pravatar.cc/150?img=4', name:'Peter Q', email:'peter@company.com', status:'inactive', role:'member', specialization:'SEO Expert', phone:'+1 234 567 8903', bio:'SEO specialist with focus on technical optimization and content strategy. Certified in Google Analytics and Search Console.', joinDate:'2022-11-05', projectsCompleted: 2},
+                {id:6, avatar:'https://i.pravatar.cc/150?img=32', name:'David Chen', email:'david@company.com', status:'active', role:'member', specialization:'Mobile Developer', phone:'+1 234 567 8905', bio:'iOS and Android developer with 4 years of experience building cross-platform mobile applications.', joinDate:'2022-08-20', projectsCompleted: 8},
+                {id:7, avatar:'https://i.pravatar.cc/150?img=28', name:'Emma Wilson', email:'emma@company.com', status:'active', role:'member', specialization:'Content Writer', phone:'+1 234 567 8906', bio:'Creative content writer specializing in tech and marketing content with 5 years of experience.', joinDate:'2023-02-10', projectsCompleted: 4},
+                {id:8, avatar:'https://i.pravatar.cc/150?img=45', name:'Michael Brown', email:'michael@company.com', status:'active', role:'member', specialization:'Digital Marketer', phone:'+1 234 567 8907', bio:'Digital marketing expert with expertise in social media campaigns, SEO, and analytics.', joinDate:'2022-12-01', projectsCompleted: 6},
+                {id:9, avatar:'https://i.pravatar.cc/150?img=22', name:'Sophia Garcia', email:'sophia@company.com', status:'active', role:'member', specialization:'UI/UX Designer', phone:'+1 234 567 8908', bio:'UI/UX designer with a focus on creating intuitive and beautiful user experiences for web and mobile applications.', joinDate:'2023-04-15', projectsCompleted: 3},
+                {id:10, avatar:'https://i.pravatar.cc/150?img=17', name:'Robert Taylor', email:'robert@company.com', status:'active', role:'member', specialization:'Data Analyst', phone:'+1 234 567 8909', bio:'Data analyst skilled in statistical analysis, data visualization, and deriving actionable insights from complex datasets.', joinDate:'2022-09-30', projectsCompleted: 7}
+            ],
+            availableProjects: [
+                {id:1, name:'E-commerce Platform', category:'Web Development', budget:'$12,000', deadline:'2024-04-15', priority:'High', description:'Build a complete e-commerce platform with payment integration and inventory management', requirements:'React frontend, Node.js backend, Stripe integration, inventory management system', status: 'available'},
+                {id:2, name:'Mobile Banking App', category:'Mobile App', budget:'$15,000', deadline:'2024-05-20', priority:'Urgent', description:'Develop a secure mobile banking application for iOS and Android', requirements:'React Native, biometric authentication, secure API integration, real-time notifications', status: 'available'},
+                {id:3, name:'Brand Identity Design', category:'Graphic Design', budget:'$3,500', deadline:'2024-03-30', priority:'Medium', description:'Create a complete brand identity including logo, color palette, and brand guidelines', requirements:'Logo design, color palette, typography, brand guidelines document', status: 'available'}
+            ],
+            myProjects: [
+                {id:4, name:'Website Redesign', category:'Web Development', budget:'$5,000', deadline:'2023-12-15', priority:'High', description:'Complete redesign of company website with modern UI/UX and responsive design', requirements:'Responsive design, CMS integration, SEO optimization', status: 'in progress', progress: 75},
+                {id:5, name:'Marketing Campaign', category:'Digital Marketing', budget:'$3,200', deadline:'2023-06-30', priority:'Medium', description:'Two-week marketing campaign focusing on social media and email marketing', requirements:'Social media integration, email templates, analytics tracking', status: 'completed', progress: 100},
+                {id:6, name:'CRM Implementation', category:'Web Development', budget:'$6,000', deadline:'2023-10-05', priority:'High', description:'Implementation of CRM system with custom modules and integration', requirements:'CRM setup, custom modules, API integration, user training', status: 'completed', progress: 100}
+            ],
+            payments: [
+                {id:1, date:'2023-10-05', amount:'$600', project:'CRM Implementation', method:'PayPal', status:'completed'},
+                {id:2, date:'2023-06-30', amount:'$320', project:'Marketing Campaign', method:'PayPal', status:'completed'},
+                {id:3, date:'2023-12-15', amount:'$500', project:'Website Redesign', method:'PayPal', status:'pending'}
+            ],
+            activities: [
+                {id: 1, when: new Date().toISOString(), text: 'Updated progress on Website Redesign to 75%', type: 'project'},
+                {id: 2, when: new Date(Date.now() - 3600000).toISOString(), text: 'Completed CRM Implementation project', type: 'completion'},
+                {id: 3, when: new Date(Date.now() - 7200000).toISOString(), text: 'Received payment for Marketing Campaign', type: 'payment'},
+                {id: 4, when: new Date(Date.now() - 10800000).toISOString(), text: 'Applied for Mobile Banking App project', type: 'project'}
+            ],
+            messages: {
+                global: [
+                    {id: 1, sender: 'Admin', text: 'Welcome to the team chat! Feel free to ask questions or discuss projects here.', time: new Date().setHours(10,30,0)},
+                    {id: 2, sender: 'You', text: 'Thanks! I\'m excited to be part of the team.', time: new Date().setHours(10,32,0)},
+                    {id: 3, sender: 'Alice K (Manager)', text: 'We have a new project starting next week. I\'ll share details soon.', time: new Date().setHours(10,35,0)}
+                ],
+                admin: [
+                    {id: 1, sender: 'Admin', text: 'Hello! How can I help you with your project?', time: new Date().setHours(9,15,0)}
+                ]
+            },
+            unreadMessages: {
+                global: 0,
+                admin: 0
+            },
+            paymentNotification: false,
+            theme: 'dark'
+        };
+
+        let MemberState = JSON.parse(JSON.stringify(defaultMemberSeed));
+
+        // Load state from localStorage
+        function loadMemberState() {
+            try {
+                const raw = localStorage.getItem(MEMBER_STORAGE_KEY);
+                if (raw) {
+                    const parsed = JSON.parse(raw);
+                    MemberState = {...MemberState, ...parsed};
+                    return true;
+                }
+            } catch(e) {
+                console.error('Failed to load member state', e);
+            }
+            return false;
+        }
+
+        // Save state to localStorage
+        function saveMemberState() {
+            try {
+                localStorage.setItem(MEMBER_STORAGE_KEY, JSON.stringify(MemberState));
+            } catch(e) {
+                console.error('Failed to save member state', e);
+            }
+        }
+
+        // Initialize
+        if (!loadMemberState()) {
+            saveMemberState();
+        }
+
+        // DOM utility functions
+        const q = s => document.querySelector(s);
+        const qA = s => document.querySelectorAll(s);
+        
+        function el(tag, props = {}, children = []) {
+            const E = document.createElement(tag);
+            Object.assign(E, props);
+            (Array.isArray(children) ? children : [children]).forEach(c => {
+                if (c == null) return;
+                if (typeof c === 'string') E.appendChild(document.createTextNode(c));
+                else E.appendChild(c);
+            });
+            return E;
+        }
+
+        function escapeHtml(str) {
+            if (!str && str !== 0) return '';
+            return String(str).replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]));
+        }
+
+        // Theme switching functionality
+        function toggleTheme() {
+            const body = document.body;
+            const themeIcon = document.getElementById('themeIcon');
+            const themeText = document.getElementById('themeText');
+            
+            if (body.classList.contains('light-theme')) {
+                // Switch to dark theme
+                body.classList.remove('light-theme');
+                themeIcon.className = 'fas fa-moon';
+                themeText.textContent = 'Light Mode';
+                MemberState.theme = 'dark';
+            } else {
+                // Switch to light theme
+                body.classList.add('light-theme');
+                themeIcon.className = 'fas fa-sun';
+                themeText.textContent = 'Dark Mode';
+                MemberState.theme = 'light';
+            }
+            
+            saveMemberState();
+        }
+
+        // Profile switching functionality
+        function toggleProfileDropdown() {
+            const dropdown = document.getElementById('profileDropdown');
+            dropdown.classList.toggle('show');
+        }
+
+        function switchProfile(profileType) {
+            const dropdown = document.getElementById('profileDropdown');
+            dropdown.classList.remove('show');
+            
+            // Update active state in dropdown
+            document.querySelectorAll('.profile-option').forEach(option => {
+                option.classList.remove('active');
+            });
+            document.querySelector(`.profile-option[data-profile="${profileType}"]`).classList.add('active');
+            
+            // Show notification
+            showNotification(`Switching to ${profileType} dashboard...`);
+            
+            // In a real application, this would redirect to the appropriate dashboard
+            setTimeout(() => {
+                if (profileType === 'member') {
+                    // Already in member dashboard
+                    showNotification('You are now in Member Dashboard');
+                } else {
+                    // For demo purposes, we'll just show an alert
+                    alert(`In a real application, this would redirect to ${profileType}-dashboard.html`);
+                    // window.location.href = `${profileType}-dashboard.html`;
+                }
+            }, 1000);
+        }
+
+        // Logout functionality
+        function openLogoutModal() {
+            document.getElementById('logoutModal').style.display = 'flex';
+            document.getElementById('logoutModal').setAttribute('aria-hidden', 'false');
+        }
+
+        function closeLogoutModal() {
+            document.getElementById('logoutModal').style.display = 'none';
+            document.getElementById('logoutModal').setAttribute('aria-hidden', 'true');
+        }
+
+        function logout() {
+            showNotification('Logging out...');
+            setTimeout(() => {
+                // Redirect to index.html
+                window.location.href = 'index.html';
+            }, 1000);
+        }
+
+        // Show notification
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.style.display = 'block';
+            
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                notification.style.transition = 'opacity 0.3s';
+                setTimeout(() => {
+                    notification.style.display = 'none';
+                    notification.style.opacity = '1';
+                }, 300);
+            }, 3000);
+        }
+
+        // Panel switching
+        function switchPanel(e) {
+            const btn = e.currentTarget;
+            document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const target = btn.dataset.target;
+            document.querySelectorAll('.panel').forEach(p => { p.style.display = 'none'; p.classList.remove('show'); });
+            const panel = document.getElementById(target);
+            if (!panel) return;
+            panel.style.display = 'block';
+            setTimeout(() => panel.classList.add('show'), 20);
+
+            // Show/hide dashboard cards
+            if (target === 'dashboardPanel') {
+                document.getElementById('cardsRow').style.display = 'flex';
+            } else {
+                document.getElementById('cardsRow').style.display = 'none';
+            }
+            
+            // Update stats when switching to dashboard
+            if (target === 'dashboardPanel') {
+                updateMemberStats();
+                renderActivityTable();
+            }
+            
+            // Update tables when switching to panels
+            if (target === 'teamMembersPanel' || target === 'availableProjectsPanel' || 
+                target === 'myProjectsPanel' || target === 'paymentsPanel') {
+                updateMemberTables();
+            }
+            
+            // Update team member cards when switching to team members panel
+            if (target === 'teamMembersPanel') {
+                updateTeamMemberCards();
+            }
+            
+            // Update profile info when switching to profile panel
+            if (target === 'profilePanel') {
+                updateProfileInfo();
+            }
+            
+            // Update messages when switching to messages panel
+            if (target === 'messagesPanel') {
+                updateMessages();
+            }
+            
+            // Clear message badges when opening messages panel
+            if (target === 'messagesPanel') {
+                clearMessageBadges();
+            }
+            
+            // Clear payment notification when opening payments panel
+            if (target === 'paymentsPanel') {
+                clearPaymentNotification();
+            }
+        }
+
+        // Update statistics
+        function updateMemberStats() {
+            // Active Projects
+            document.getElementById('kActiveProjects').innerText = MemberState.myProjects.filter(p => p.status === 'in progress').length;
+            
+            // Completed Projects
+            document.getElementById('kCompleted').innerText = MemberState.myProjects.filter(p => p.status === 'completed').length;
+            
+            // Total Earnings
+            const totalEarnings = MemberState.payments
+                .filter(p => p.status === 'completed')
+                .reduce((sum, payment) => {
+                    const amount = parseFloat(payment.amount.replace('$', '').replace(',', ''));
+                    return sum + (isNaN(amount) ? 0 : amount);
+                }, 0);
+            document.getElementById('kEarnings').innerText = '$' + totalEarnings.toLocaleString();
+            
+            // Team Members
+            document.getElementById('kTeam').innerText = MemberState.teamMembers.filter(m => m.status === 'active').length;
+        }
+
+        // Update team member cards
+        function updateTeamMemberCards() {
+            const container = document.getElementById('teamMemberCards');
+            if (!container) return;
+            
+            container.innerHTML = '';
+            
+            // Sort team members by role (admin first, then manager, then member)
+            const sortedTeamMembers = [...MemberState.teamMembers].sort((a, b) => {
+                const roleOrder = {admin: 1, manager: 2, member: 3};
+                return roleOrder[a.role] - roleOrder[b.role];
+            });
+            
+            sortedTeamMembers.forEach(member => {
+                const card = document.createElement('div');
+                card.className = 'team-member-card';
+                card.innerHTML = `
+                    <div class="avatar">
+                        <img src="${member.avatar}" alt="${member.name}">
+                    </div>
+                    <div class="name">${escapeHtml(member.name)}</div>
+                    <div class="role-badge ${member.role}">${escapeHtml(member.role.toUpperCase())}</div>
+                    <div class="specialization">${escapeHtml(member.specialization)}</div>
+                    <div class="bio">${escapeHtml(member.bio)}</div>
+                    <div class="stats">
+                        <div class="stat">
+                            <div class="stat-value">${member.projectsCompleted}</div>
+                            <div class="stat-label">Projects</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">${new Date(member.joinDate).getFullYear()}</div>
+                            <div class="stat-label">Joined</div>
+                        </div>
+                    </div>
+                    <div class="actions">
+                        <button class="btn view" onclick="viewTeamMember(${member.id})"><i class="fas fa-eye"></i> View</button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // Update profile information
+        function updateProfileInfo() {
+            // Update earnings card
+            const totalEarnings = MemberState.payments
+                .filter(p => p.status === 'completed')
+                .reduce((sum, payment) => {
+                    const amount = parseFloat(payment.amount.replace('$', '').replace(',', ''));
+                    return sum + (isNaN(amount) ? 0 : amount);
+                }, 0);
+            document.getElementById('profileEarnings').innerText = '$' + totalEarnings.toLocaleString();
+            
+            // Update info cards
+            document.getElementById('profileActiveProjects').innerText = MemberState.myProjects.filter(p => p.status === 'in progress').length;
+            document.getElementById('profileCompletedProjects').innerText = MemberState.myProjects.filter(p => p.status === 'completed').length;
+            document.getElementById('profileHoursWorked').innerText = MemberState.member.hoursWorked;
+            document.getElementById('profileRating').innerText = MemberState.member.rating;
+        }
+
+        // Update messages
+        function updateMessages() {
+            const activeTab = document.querySelector('.messages-tab.active').dataset.tab;
+            const messagesList = document.getElementById('messagesList');
+            const messagesHeader = document.getElementById('messagesHeader');
+            const messagesSubheader = document.getElementById('messagesSubheader');
+            const onlineStatus = document.getElementById('onlineStatus');
+            
+            if (!messagesList) return;
+            
+            // Update header based on active tab
+            if (activeTab === 'global') {
+                messagesHeader.textContent = 'Global Chat';
+                messagesSubheader.textContent = 'Chat with all team members';
+                onlineStatus.textContent = 'Online: ' + MemberState.teamMembers.filter(m => m.status === 'active').length;
+            } else {
+                messagesHeader.textContent = 'Admin Discussion';
+                messagesSubheader.textContent = 'Discuss projects with admin';
+                onlineStatus.textContent = 'Admin Online';
+            }
+            
+            // Clear existing messages
+            messagesList.innerHTML = '';
+            
+            // Get messages for active tab
+            const messages = MemberState.messages[activeTab];
+            
+            // Sort messages by time (newest first)
+            const sortedMessages = [...messages].sort((a, b) => b.time - a.time);
+            
+            // Add messages to the list
+            sortedMessages.forEach(message => {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${message.sender === 'You' ? 'own' : 'other'}`;
+                
+                const time = new Date(message.time);
+                const timeString = time.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                
+                messageDiv.innerHTML = `
+                    <div class="message-sender">${escapeHtml(message.sender)} <span style="color:var(--accent)">•</span> <span style="color:var(--muted);font-size:11px">${timeString}</span></div>
+                    <div class="message-text">${escapeHtml(message.text)}</div>
+                `;
+                
+                messagesList.appendChild(messageDiv);
+            });
+            
+            // Scroll to bottom
+            messagesList.scrollTop = messagesList.scrollHeight;
+        }
+
+        // Switch message tab
+        function switchMessageTab(tab) {
+            // Update active tab
+            document.querySelectorAll('.messages-tab').forEach(t => t.classList.remove('active'));
+            document.querySelector(`.messages-tab[data-tab="${tab}"]`).classList.add('active');
+            
+            // Update messages
+            updateMessages();
+            
+            // Clear badge for this tab
+            clearMessageBadge(tab);
+        }
+
+        // Send message
+        function sendMessage() {
+            const messageInput = document.getElementById('messageInput');
+            const text = messageInput.value.trim();
+            const activeTab = document.querySelector('.messages-tab.active').dataset.tab;
+            
+            if (text) {
+                // Add message to state
+                const messages = MemberState.messages[activeTab];
+                const messageId = messages.length ? Math.max(...messages.map(m => m.id)) + 1 : 1;
+                messages.unshift({
+                    id: messageId,
+                    sender: 'You',
+                    text: text,
+                    time: new Date().getTime()
+                });
+                
+                // Save state
+                saveMemberState();
+                
+                // Update UI
+                updateMessages();
+                
+                // Clear input
+                messageInput.value = '';
+                
+                // Show notification
+                showNotification('Message sent!');
+                
+                // Simulate response in global chat
+                if (activeTab === 'global') {
+                    setTimeout(() => {
+                        const responseId = messages.length ? Math.max(...messages.map(m => m.id)) + 1 : 1;
+                        const responses = [
+                            "Thanks for sharing!",
+                            "That's a great point!",
+                            "I agree with you on that.",
+                            "Let me know if you need any help with that."
+                        ];
+                        const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+                        
+                        messages.unshift({
+                            id: responseId,
+                            sender: Math.random() > 0.5 ? 'Alice K (Manager)' : 'Sarah Johnson (Admin)',
+                            text: randomResponse,
+                            time: new Date().getTime()
+                        });
+                        
+                        saveMemberState();
+                        updateMessages();
+                        
+                        // Add notification badge
+                        if (document.querySelector('.messages-tab.active').dataset.tab !== 'global') {
+                            MemberState.unreadMessages.global++;
+                            updateMessageBadges();
+                        }
+                    }, 2000);
+                }
+                
+                // Simulate admin response in admin chat
+                if (activeTab === 'admin') {
+                    setTimeout(() => {
+                        const responseId = messages.length ? Math.max(...messages.map(m => m.id)) + 1 : 1;
+                        
+                        messages.unshift({
+                            id: responseId,
+                            sender: 'Admin',
+                            text: "Thanks for your message. I'll review this and get back to you shortly.",
+                            time: new Date().getTime()
+                        });
+                        
+                        saveMemberState();
+                        updateMessages();
+                        
+                        // Add notification badge
+                        if (document.querySelector('.messages-tab.active').dataset.tab !== 'admin') {
+                            MemberState.unreadMessages.admin++;
+                            updateMessageBadges();
+                        }
+                    }, 1500);
+                }
+            }
+        }
+
+        // Update message badges
+        function updateMessageBadges() {
+            const messagesBadge = document.getElementById('messagesBadge');
+            const globalBadge = document.getElementById('globalBadge');
+            const adminBadge = document.getElementById('adminBadge');
+            
+            const totalUnread = MemberState.unreadMessages.global + MemberState.unreadMessages.admin;
+            
+            // Update main messages badge
+            if (totalUnread > 0) {
+                messagesBadge.style.display = 'block';
+            } else {
+                messagesBadge.style.display = 'none';
+            }
+            
+            // Update tab badges
+            if (MemberState.unreadMessages.global > 0) {
+                globalBadge.style.display = 'block';
+            } else {
+                globalBadge.style.display = 'none';
+            }
+            
+            if (MemberState.unreadMessages.admin > 0) {
+                adminBadge.style.display = 'block';
+            } else {
+                adminBadge.style.display = 'none';
+            }
+        }
+
+        // Clear message badges
+        function clearMessageBadges() {
+            MemberState.unreadMessages.global = 0;
+            MemberState.unreadMessages.admin = 0;
+            updateMessageBadges();
+        }
+
+        // Clear specific message badge
+        function clearMessageBadge(tab) {
+            MemberState.unreadMessages[tab] = 0;
+            updateMessageBadges();
+        }
+
+        // Clear payment notification
+        function clearPaymentNotification() {
+            MemberState.paymentNotification = false;
+        }
+
+        // Render activity table
+        function renderActivityTable() {
+            const tbody = document.querySelector('#activityTable tbody');
+            if (!tbody) return;
+            
+            tbody.innerHTML = '';
+            
+            // Sort activities by date (newest first)
+            const sortedActivities = [...MemberState.activities].sort((a, b) => new Date(b.when) - new Date(a.when));
+            
+            // Get search term
+            const searchTerm = document.getElementById('activitySearch')?.value?.toLowerCase() || '';
+            
+            // Filter activities based on search term
+            const filteredActivities = sortedActivities.filter(activity => 
+                activity.text.toLowerCase().includes(searchTerm) || 
+                activity.type.toLowerCase().includes(searchTerm)
+            );
+            
+            // Show only latest 20 activities
+            filteredActivities.slice(0, 20).forEach(activity => {
+                const tr = document.createElement('tr');
+                const when = new Date(activity.when).toLocaleString();
+                tr.innerHTML = `
+                    <td>${escapeHtml(when)}</td>
+                    <td>${escapeHtml(activity.text)}</td>
+                    <td><span class="badge ${activity.type === 'project' ? 'live' : activity.type === 'completion' ? 'completed' : 'pending'}">${escapeHtml(activity.type)}</span></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Update tables
+        function updateMemberTables() {
+            // Update available projects table
+            const availableProjectsTable = document.querySelector('#availableProjectsTable tbody');
+            if (availableProjectsTable) {
+                availableProjectsTable.innerHTML = '';
+                MemberState.availableProjects.forEach(project => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${escapeHtml(project.name)}</td>
+                        <td>${escapeHtml(project.category)}</td>
+                        <td>${escapeHtml(project.budget)}</td>
+                        <td>${escapeHtml(project.deadline)}</td>
+                        <td><span class="badge ${project.priority==='High'||project.priority==='Urgent' ? 'live' : project.priority==='Medium' ? 'pending' : 'completed'}">${escapeHtml(project.priority)}</span></td>
+                        <td>
+                            <button class="btn view" onclick="viewProjectDetails(${project.id}, 'available')"><i class="fas fa-eye"></i> View</button>
+                            <button class="btn accept" onclick="applyForProject(${project.id})"><i class="fas fa-check"></i> Apply</button>
+                        </td>
+                    `;
+                    availableProjectsTable.appendChild(tr);
+                });
+            }
+            
+            // Update my projects table
+            const myProjectsTable = document.querySelector('#myProjectsTable tbody');
+            if (myProjectsTable) {
+                myProjectsTable.innerHTML = '';
+                MemberState.myProjects.forEach(project => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${escapeHtml(project.name)}</td>
+                        <td>${escapeHtml(project.category)}</td>
+                        <td>${escapeHtml(project.budget)}</td>
+                        <td>${escapeHtml(project.deadline)}</td>
+                        <td><span class="badge ${project.status==='in progress' ? 'pending' : 'completed'}">${escapeHtml(project.status)}</span></td>
+                        <td>
+                            <div style="display:flex;align-items:center;gap:8px">
+                                <div style="flex:1;height:8px;background:rgba(255,255,255,0.1);border-radius:4px;overflow:hidden">
+                                    <div style="height:100%;width:${project.progress}%;background:linear-gradient(90deg, var(--accent), var(--accent-2));border-radius:4px"></div>
+                                </div>
+                                <span>${project.progress}%</span>
+                            </div>
+                        </td>
+                        <td>
+                            <button class="btn view" onclick="viewProjectDetails(${project.id}, 'my')"><i class="fas fa-eye"></i> View</button>
+                            <button class="btn edit" onclick="openProgressModal(${project.id})"><i class="fas fa-edit"></i> Update</button>
+                            ${project.status === 'in progress' ? 
+                                `<button class="btn admin" onclick="openCompletionModal(${project.id})"><i class="fas fa-check"></i> Complete</button>` : 
+                                ''
+                            }
+                        </td>
+                    `;
+                    myProjectsTable.appendChild(tr);
+                });
+            }
+            
+            // Update payments table
+            const paymentsTable = document.querySelector('#paymentsTable tbody');
+            if (paymentsTable) {
+                paymentsTable.innerHTML = '';
+                MemberState.payments.forEach(payment => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${escapeHtml(payment.date)}</td>
+                        <td>${escapeHtml(payment.amount)}</td>
+                        <td>${escapeHtml(payment.project)}</td>
+                        <td>${escapeHtml(payment.method)}</td>
+                        <td><span class="badge ${payment.status==='completed' ? 'completed' : 'pending'}">${escapeHtml(payment.status)}</span></td>
+                        <td>
+                            <button class="btn view" onclick="viewPaymentProject('${payment.project}')"><i class="fas fa-eye"></i> View Project</button>
+                        </td>
+                    `;
+                    paymentsTable.appendChild(tr);
+                });
+            }
+        }
+
+        // View project details
+        function viewProjectDetails(id, type) {
+            let project;
+            if (type === 'available') {
+                project = MemberState.availableProjects.find(p => p.id === id);
+            } else {
+                project = MemberState.myProjects.find(p => p.id === id);
+            }
+            
+            if (project) {
+                const modalBody = document.getElementById('projectModalBody');
+                const modalTitle = document.getElementById('projectModalTitle');
+                const acceptBtn = document.getElementById('projectModalAcceptBtn');
+                const discussBtn = document.getElementById('projectModalDiscussBtn');
+                
+                modalTitle.innerHTML = `<i class="fas fa-project-diagram"></i> ${project.name} - Project Details`;
+                
+                modalBody.innerHTML = `
+                    <div class="form-section">
+                        <div class="form-section-title"><i class="fas fa-info-circle"></i> Basic Information</div>
+                        <div style="display:flex;gap:12px;flex-wrap:wrap">
+                            <div class="form-group" style="min-width:200px;flex:1">
+                                <label class="form-label">Project Name</label>
+                                <div class="form-input" style="background:rgba(255,255,255,0.02)">${escapeHtml(project.name)}</div>
+                            </div>
+                            <div class="form-group" style="min-width:200px;flex:1">
+                                <label class="form-label">Category</label>
+                                <div class="form-input" style="background:rgba(255,255,255,0.02)">${escapeHtml(project.category)}</div>
+                            </div>
+                        </div>
+                        <div style="display:flex;gap:12px;flex-wrap:wrap">
+                            <div class="form-group" style="min-width:200px;flex:1">
+                                <label class="form-label">Budget</label>
+                                <div class="form-input" style="background:rgba(255,255,255,0.02)">${escapeHtml(project.budget)}</div>
+                            </div>
+                            <div class="form-group" style="min-width:200px;flex:1">
+                                <label class="form-label">Deadline</label>
+                                <div class="form-input" style="background:rgba(255,255,255,0.02)">${escapeHtml(project.deadline)}</div>
+                            </div>
+                        </div>
+                        <div style="display:flex;gap:12px;flex-wrap:wrap">
+                            <div class="form-group" style="min-width:200px;flex:1">
+                                <label class="form-label">Priority</label>
+                                <div class="form-input" style="background:rgba(255,255,255,0.02)">${escapeHtml(project.priority)}</div>
+                            </div>
+                            <div class="form-group" style="min-width:200px;flex:1">
+                                <label class="form-label">Status</label>
+                                <div class="form-input" style="background:rgba(255,255,255,0.02)"><span class="badge ${project.status==='available' ? 'live' : project.status==='in progress' ? 'pending' : 'completed'}">${escapeHtml(project.status)}</span></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-section">
+                        <div class="form-section-title"><i class="fas fa-align-left"></i> Description</div>
+                        <div class="form-group">
+                            <div class="form-textarea" style="background:rgba(255,255,255,0.02); height: auto;">${escapeHtml(project.description)}</div>
+                        </div>
+                    </div>
+                    <div class="form-section">
+                        <div class="form-section-title"><i class="fas fa-tasks"></i> Requirements</div>
+                        <div class="form-group">
+                            <div class="form-textarea" style="background:rgba(255,255,255,0.02); height: auto;">${escapeHtml(project.requirements)}</div>
+                        </div>
+                    </div>
+                `;
+                
+                if (type === 'available') {
+                    acceptBtn.style.display = 'inline-flex';
+                    acceptBtn.onclick = function() { applyForProject(id); };
+                    discussBtn.style.display = 'inline-flex';
+                    discussBtn.onclick = function() { discussProject(id); };
+                } else {
+                    acceptBtn.style.display = 'none';
+                    discussBtn.style.display = 'inline-flex';
+                    discussBtn.onclick = function() { discussProject(id); };
+                }
+                
+                document.getElementById('projectModal').style.display = 'flex';
+                document.getElementById('projectModal').setAttribute('aria-hidden', 'false');
+            }
+        }
+
+        function closeProjectModal() {
+            document.getElementById('projectModal').style.display = 'none';
+            document.getElementById('projectModal').setAttribute('aria-hidden', 'true');
+        }
+
+        // Apply for project
+        function applyForProject(id) {
+            const project = MemberState.availableProjects.find(p => p.id === id);
+            if (project) {
+                // Remove from available projects
+                MemberState.availableProjects = MemberState.availableProjects.filter(p => p.id !== id);
+                
+                // Add to my projects
+                const newId = MemberState.myProjects.length ? Math.max(...MemberState.myProjects.map(p => p.id)) + 1 : 1;
+                MemberState.myProjects.unshift({
+                    ...project,
+                    id: newId,
+                    status: 'in progress',
+                    progress: 0
+                });
+                
+                // Add activity
+                MemberState.activities.unshift({
+                    id: MemberState.activities.length ? Math.max(...MemberState.activities.map(a => a.id)) + 1 : 1,
+                    when: new Date().toISOString(),
+                    text: `Applied for ${project.name} project`,
+                    type: 'project'
+                });
+                
+                saveMemberState();
+                updateMemberTables();
+                updateMemberStats();
+                closeProjectModal();
+                showNotification(`Project "${project.name}" added to your projects!`);
+            }
+        }
+
+        // Discuss project
+        function discussProject(id) {
+            let project;
+            if (MemberState.availableProjects.find(p => p.id === id)) {
+                project = MemberState.availableProjects.find(p => p.id === id);
+            } else {
+                project = MemberState.myProjects.find(p => p.id === id);
+            }
+            
+            if (project) {
+                // Add message to admin
+                const messages = MemberState.messages.admin;
+                const messageId = messages.length ? Math.max(...messages.map(m => m.id)) + 1 : 1;
+                messages.unshift({
+                    id: messageId,
+                    sender: 'You',
+                    text: `I'd like to discuss the "${project.name}" project. Category: ${project.category}, Budget: ${project.budget}, Deadline: ${project.deadline}. Description: ${project.description}`,
+                    time: new Date().getTime()
+                });
+                
+                // Add notification badge
+                MemberState.unreadMessages.admin++;
+                updateMessageBadges();
+                
+                // Save state
+                saveMemberState();
+                
+                // Close modal
+                closeProjectModal();
+                
+                // Switch to messages panel and admin tab
+                document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
+                document.querySelector('.nav button[data-target="messagesPanel"]').classList.add('active');
+                document.querySelectorAll('.panel').forEach(p => { p.style.display = 'none'; p.classList.remove('show'); });
+                const panel = document.getElementById('messagesPanel');
+                panel.style.display = 'block';
+                setTimeout(() => panel.classList.add('show'), 20);
+                
+                // Switch to admin tab
+                document.querySelectorAll('.messages-tab').forEach(t => t.classList.remove('active'));
+                document.querySelector('.messages-tab[data-tab="admin"]').classList.add('active');
+                
+                // Update messages
+                updateMessages();
+                
+                showNotification('Message sent to admin about the project!');
+            }
+        }
+
+        // Open progress modal
+        function openProgressModal(id) {
+            const project = MemberState.myProjects.find(p => p.id === id);
+            if (project) {
+                const modalBody = document.getElementById('progressModalBody');
+                const modalTitle = document.getElementById('progressModalTitle');
+                const submitBtn = document.getElementById('progressModalSubmitBtn');
+                
+                modalTitle.innerHTML = `<i class="fas fa-chart-line"></i> Update Progress for ${project.name}`;
+                
+                modalBody.innerHTML = `
+                    <div class="form-section">
+                        <div class="form-section-title"><i class="fas fa-info-circle"></i> Current Progress: <span id="currentProgressValue">${project.progress}%</span></div>
+                        <div class="progress-slider-container">
+                            <input type="range" min="0" max="100" value="${project.progress}" class="progress-slider" id="progressSlider" oninput="updateProgressVisual(this.value)">
+                            <div class="progress-value" id="progressValue">${project.progress}%</div>
+                            <div class="progress-visual">
+                                <div class="progress-fill" id="progressFill" style="width: ${project.progress}%"></div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                submitBtn.onclick = function() { updateProjectProgress(id); };
+                
+                document.getElementById('progressModal').style.display = 'flex';
+                document.getElementById('progressModal').setAttribute('aria-hidden', 'false');
+            }
+        }
+
+        function closeProgressModal() {
+            document.getElementById('progressModal').style.display = 'none';
+            document.getElementById('progressModal').setAttribute('aria-hidden', 'true');
+        }
+
+        // Update progress visual
+        function updateProgressVisual(value) {
+            document.getElementById('progressValue').textContent = value + '%';
+            document.getElementById('progressFill').style.width = value + '%';
+            document.getElementById('currentProgressValue').textContent = value + '%';
+        }
+
+        // Update project progress
+        function updateProjectProgress(id) {
+            const project = MemberState.myProjects.find(p => p.id === id);
+            if (project) {
+                const newProgress = parseInt(document.getElementById('progressSlider').value);
+                project.progress = newProgress;
+                
+                // Auto-update progress based on deadline
+                const deadline = new Date(project.deadline);
+                const today = new Date();
+                const totalDays = Math.ceil((deadline - today) / (1000 * 60 * 60 * 24));
+                
+                // If deadline is approaching, adjust progress automatically
+                if (totalDays <= 7 && project.progress < 90) {
+                    project.progress = Math.min(project.progress + 10, 90);
+                }
+                
+                // Add activity
+                MemberState.activities.unshift({
+                    id: MemberState.activities.length ? Math.max(...MemberState.activities.map(a => a.id)) + 1 : 1,
+                    when: new Date().toISOString(),
+                    text: `Updated progress for ${project.name} to ${project.progress}%`,
+                    type: 'project'
+                });
+                
+                saveMemberState();
+                updateMemberTables();
+                closeProgressModal();
+                showNotification(`Progress updated to ${project.progress}% for "${project.name}"`);
+            }
+        }
+
+        // Open completion modal
+        function openCompletionModal(id) {
+            const project = MemberState.myProjects.find(p => p.id === id);
+            if (project) {
+                const modalBody = document.getElementById('completionModalBody');
+                const modalTitle = document.getElementById('completionModalTitle');
+                const submitBtn = document.getElementById('completionModalSubmitBtn');
+                
+                modalTitle.innerHTML = `<i class="fas fa-check-circle"></i> Complete ${project.name}`;
+                
+                let fileRequirements = '';
+                if (project.category === 'Digital Marketing' || project.category === 'SEO') {
+                    fileRequirements = `
+                        <div class="form-group">
+                            <label class="form-label">Project Proof (Images)</label>
+                            <div class="file-upload-area" id="proofUploadArea">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <div class="file-upload-text">Drag & drop project proof images here or click to browse</div>
+                                <input type="file" class="file-input" id="proofFiles" multiple accept="image/*" onchange="handleFileSelect('proofFiles', 'proofPreview')">
+                                <label for="proofFiles" class="file-upload-btn">Select Files</label>
+                                <div class="file-preview" id="proofPreview"></div>
+                            </div>
+                        </div>
+                    `;
+                } else if (project.category === 'Graphic Design') {
+                    fileRequirements = `
+                        <div class="form-group">
+                            <label class="form-label">Final Images</label>
+                            <div class="file-upload-area" id="imageUploadArea">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <div class="file-upload-text">Drag & drop final images here or click to browse</div>
+                                <input type="file" class="file-input" id="imageFiles" multiple accept="image/*" onchange="handleFileSelect('imageFiles', 'imagePreview')">
+                                <label for="imageFiles" class="file-upload-btn">Select Files</label>
+                                <div class="file-preview" id="imagePreview"></div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Source Files</label>
+                            <div class="file-upload-area" id="sourceUploadArea">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <div class="file-upload-text">Drag & drop source files here or click to browse</div>
+                                <input type="file" class="file-input" id="sourceFiles" multiple onchange="handleFileSelect('sourceFiles', 'sourcePreview')">
+                                <label for="sourceFiles" class="file-upload-btn">Select Files</label>
+                                <div class="file-preview" id="sourcePreview"></div>
+                            </div>
+                        </div>
+                    `;
+                } else if (project.category === 'Video Editing') {
+                    fileRequirements = `
+                        <div class="form-group">
+                            <label class="form-label">Final Video</label>
+                            <div class="file-upload-area" id="videoUploadArea">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <div class="file-upload-text">Drag & drop final video here or click to browse</div>
+                                <input type="file" class="file-input" id="videoFiles" accept="video/*" onchange="handleFileSelect('videoFiles', 'videoPreview')">
+                                <label for="videoFiles" class="file-upload-btn">Select File</label>
+                                <div class="file-preview" id="videoPreview"></div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Source Files</label>
+                            <div class="file-upload-area" id="sourceUploadArea">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <div class="file-upload-text">Drag & drop source files here or click to browse</div>
+                                <input type="file" class="file-input" id="sourceFiles" multiple onchange="handleFileSelect('sourceFiles', 'sourcePreview')">
+                                <label for="sourceFiles" class="file-upload-btn">Select Files</label>
+                                <div class="file-preview" id="sourcePreview"></div>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    fileRequirements = `
+                        <div class="form-group">
+                            <label class="form-label">Project Files</label>
+                            <div class="file-upload-area" id="filesUploadArea">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <div class="file-upload-text">Drag & drop project files here or click to browse</div>
+                                <input type="file" class="file-input" id="projectFiles" multiple onchange="handleFileSelect('projectFiles', 'filesPreview')">
+                                <label for="projectFiles" class="file-upload-btn">Select Files</label>
+                                <div class="file-preview" id="filesPreview"></div>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                modalBody.innerHTML = `
+                    <div class="form-section">
+                        <div class="form-section-title"><i class="fas fa-info-circle"></i> Completion Details</div>
+                        <div class="form-group">
+                            <label class="form-label">Completion Description</label>
+                            <textarea class="form-textarea" id="completionDescription" placeholder="Describe the work completed, challenges faced, and results achieved..."></textarea>
+                        </div>
+                        ${fileRequirements}
+                    </div>
+                `;
+                
+                submitBtn.onclick = function() { completeProject(id); };
+                
+                document.getElementById('completionModal').style.display = 'flex';
+                document.getElementById('completionModal').setAttribute('aria-hidden', 'false');
+            }
+        }
+
+        function closeCompletionModal() {
+            document.getElementById('completionModal').style.display = 'none';
+            document.getElementById('completionModal').setAttribute('aria-hidden', 'true');
+        }
+
+        // Handle file selection
+        function handleFileSelect(inputId, previewId) {
+            const input = document.getElementById(inputId);
+            const preview = document.getElementById(previewId);
+            const files = input.files;
+            
+            preview.innerHTML = '';
+            
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                const fileItem = document.createElement('div');
+                fileItem.className = 'file-preview-item';
+                fileItem.innerHTML = `
+                    <i class="fas fa-file"></i>
+                    <span>${file.name}</span>
+                `;
+                preview.appendChild(fileItem);
+            }
+        }
+
+        // Complete project
+        function completeProject(id) {
+            const project = MemberState.myProjects.find(p => p.id === id);
+            if (project) {
+                const description = document.getElementById('completionDescription').value.trim();
+                
+                if (!description) {
+                    alert('Please provide a completion description');
+                    return;
+                }
+                
+                project.status = 'completed';
+                project.progress = 100;
+                
+                // Add payment record
+                const paymentId = MemberState.payments.length ? Math.max(...MemberState.payments.map(p => p.id)) + 1 : 1;
+                MemberState.payments.unshift({
+                    id: paymentId,
+                    date: new Date().toISOString().split('T')[0],
+                    amount: project.budget,
+                    project: project.name,
+                    method: MemberState.member.paymentMethod,
+                    status: 'pending'
+                });
+                
+                // Update member stats
+                const amount = parseFloat(project.budget.replace('$', '').replace(',', ''));
+                MemberState.member.earnings += isNaN(amount) ? 0 : amount;
+                MemberState.member.projectsCompleted += 1;
+                MemberState.member.hoursWorked += 40; // Assuming 40 hours per project
+                
+                // Add activity
+                MemberState.activities.unshift({
+                    id: MemberState.activities.length ? Math.max(...MemberState.activities.map(a => a.id)) + 1 : 1,
+                    when: new Date().toISOString(),
+                    text: `Completed ${project.name} project`,
+                    type: 'completion'
+                });
+                
+                // Set payment notification
+                MemberState.paymentNotification = true;
+                
+                saveMemberState();
+                updateMemberTables();
+                updateMemberStats();
+                updateProfileInfo();
+                closeCompletionModal();
+                showNotification(`Project "${project.name}" completed and submitted for payment!`);
+            }
+        }
+
+        // Team member functions
+        function viewTeamMember(id) {
+            const member = MemberState.teamMembers.find(m => m.id === id);
+            if (member) {
+                const modalBody = document.getElementById('memberModalBody');
+                const modalTitle = document.getElementById('memberModalTitle');
+                
+                modalTitle.innerHTML = `<i class="fas fa-user"></i> ${member.name}`;
+                
+                modalBody.innerHTML = `
+                    <div style="display:flex;flex-direction:column;align-items:center;gap:16px;margin-bottom:20px">
+                        <div class="avatar" style="width:120px;height:120px;border-radius:50%">
+                            <img src="${member.avatar}" alt="${member.name}">
+                        </div>
+                        <div style="text-align:center">
+                            <h3 style="margin:0 0 4px 0">${escapeHtml(member.name)}</h3>
+                            <div class="role-badge ${member.role}" style="display:inline-block">${escapeHtml(member.role.toUpperCase())}</div>
+                            <div style="color:var(--accent);font-weight:600;margin-top:8px">${escapeHtml(member.specialization)}</div>
+                            <div style="margin-top:8px;color:var(--muted)">${escapeHtml(member.bio)}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="info-cards">
+                        <div class="info-card">
+                            <div class="icon"><i class="fas fa-check-circle"></i></div>
+                            <div class="value">${member.projectsCompleted}</div>
+                            <div class="label">Projects Completed</div>
+                        </div>
+                        <div class="info-card">
+                            <div class="icon"><i class="fas fa-calendar"></i></div>
+                            <div class="value">${new Date(member.joinDate).getFullYear()}</div>
+                            <div class="label">Joined</div>
+                        </div>
+                        <div class="info-card">
+                            <div class="icon"><i class="fas fa-user-check"></i></div>
+                            <div class="value">${member.status === 'active' ? 'Active' : 'Inactive'}</div>
+                            <div class="label">Status</div>
+                        </div>
+                    </div>
+                `;
+                
+                document.getElementById('memberModal').style.display = 'flex';
+                document.getElementById('memberModal').setAttribute('aria-hidden', 'false');
+            }
+        }
+
+        function closeMemberModal() {
+            document.getElementById('memberModal').style.display = 'none';
+            document.getElementById('memberModal').setAttribute('aria-hidden', 'true');
+        }
+
+        // View payment project
+        function viewPaymentProject(projectName) {
+            let project = MemberState.myProjects.find(p => p.name === projectName);
+            if (!project) {
+                project = MemberState.availableProjects.find(p => p.name === projectName);
+            }
+            
+            if (project) {
+                viewProjectDetails(project.id, 'my');
+            } else {
+                showNotification('Project details not found');
+            }
+        }
+
+        // Profile functions
+        function saveProfile() {
+            MemberState.member.name = document.getElementById('memberName').value.trim();
+            MemberState.member.email = document.getElementById('memberEmail').value.trim();
+            MemberState.member.specialization = document.getElementById('memberSpecialization').value.trim();
+            MemberState.member.phone = document.getElementById('memberPhone').value.trim();
+            MemberState.member.bio = document.getElementById('memberBio').value.trim();
+            MemberState.member.paymentMethod = document.getElementById('memberPaymentMethod').value;
+            MemberState.member.paymentAddress = document.getElementById('memberPaymentAddress').value.trim();
+            
+            saveMemberState();
+            showNotification('Profile saved successfully!');
+        }
+
+        function changeProfileImage() {
+            // In a real application, this would open a file picker
+            const newImage = prompt('Enter new profile image URL:');
+            if (newImage) {
+                MemberState.member.avatar = newImage;
+                document.getElementById('memberProfileImage').src = newImage;
+                saveMemberState();
+                showNotification('Profile image updated!');
+            }
+        }
+
+        // Table search functionality
+        function tableSearch(event) {
+            const searchTerm = event.target.value.toLowerCase();
+            const tableId = event.target.getAttribute('data-table');
+            const rows = document.querySelectorAll(`#${tableId} tbody tr`);
+            
+            rows.forEach(row => {
+                let found = false;
+                for (let i = 0; i < row.cells.length; i++) {
+                    const cellText = row.cells[i].textContent.toLowerCase();
+                    if (cellText.includes(searchTerm)) {
+                        found = true;
+                        break;
+                    }
+                }
+                row.style.display = found ? '' : 'none';
+            });
+        }
+
+        // Table filter functionality
+        function applyTableFilter(tableId, column, value) {
+            const rows = document.querySelectorAll(`#${tableId} tbody tr`);
+            
+            rows.forEach(row => {
+                let showRow = true;
+                if (value) {
+                    const cellText = row.querySelector(`td:nth-child(${getColumnIndex(tableId, column)})`).textContent.toLowerCase();
+                    if (!cellText.includes(value.toLowerCase())) {
+                        showRow = false;
+                    }
+                }
+                row.style.display = showRow ? '' : 'none';
+            });
+        }
+
+        // Helper function to get column index
+        function getColumnIndex(tableId, columnName) {
+            const headers = document.querySelectorAll(`#${tableId} thead th`);
+            for (let i = 0; i < headers.length; i++) {
+                if (headers[i].getAttribute('data-col') === columnName) {
+                    return i + 1;
+                }
+            }
+            return -1;
+        }
+
+        // Initialize the member dashboard
+        function initMemberDashboard() {
+            // Set up initial UI state
+            document.getElementById('memberName').value = MemberState.member.name;
+            document.getElementById('memberEmail').value = MemberState.member.email;
+            document.getElementById('memberSpecialization').value = MemberState.member.specialization;
+            document.getElementById('memberPhone').value = MemberState.member.phone;
+            document.getElementById('memberBio').value = MemberState.member.bio;
+            document.getElementById('memberPaymentMethod').value = MemberState.member.paymentMethod;
+            document.getElementById('memberPaymentAddress').value = MemberState.member.paymentAddress;
+            document.getElementById('memberProfileImage').src = MemberState.member.avatar;
+            
+            // Set theme
+            if (MemberState.theme === 'light') {
+                document.body.classList.add('light-theme');
+                document.getElementById('themeIcon').className = 'fas fa-sun';
+                document.getElementById('themeText').textContent = 'Dark Mode';
+            }
+            
+            // Show/hide profile switcher based on permission
+            if (MemberState.member.canSwitchProfile) {
+                document.getElementById('profileSwitcher').style.display = 'inline-block';
+            }
+            
+            // Update stats
+            updateMemberStats();
+            
+            // Update tables
+            updateMemberTables();
+            
+            // Update team member cards
+            updateTeamMemberCards();
+            
+            // Update profile info
+            updateProfileInfo();
+            
+            // Update messages
+            updateMessages();
+            
+            // Update message badges
+            updateMessageBadges();
+            
+            // Render activity table
+            renderActivityTable();
+            
+            // Set up card animations
+            document.querySelectorAll('.card').forEach((card, i) => {
+                setTimeout(() => card.classList.add('show'), i * 120);
+            });
+            
+            // Simulate payment status change notification
+            setTimeout(() => {
+                if (MemberState.paymentNotification) {
+                    showNotification('Payment status updated! Check your payments panel.');
+                }
+            }, 2000);
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            const dropdown = document.getElementById('profileDropdown');
+            const switcher = document.querySelector('.profile-switcher');
+            if (switcher && !switcher.contains(e.target) && dropdown.classList.contains('show')) {
+                dropdown.classList.remove('show');
+            }
+            
+            // Close modals when clicking on backdrop
+            const projectModal = document.getElementById('projectModal');
+            if (e.target === projectModal) {
+                closeProjectModal();
+            }
+            
+            const completionModal = document.getElementById('completionModal');
+            if (e.target === completionModal) {
+                closeCompletionModal();
+            }
+            
+            const memberModal = document.getElementById('memberModal');
+            if (e.target === memberModal) {
+                closeMemberModal();
+            }
+            
+            const progressModal = document.getElementById('progressModal');
+            if (e.target === progressModal) {
+                closeProgressModal();
+            }
+            
+            const logoutModal = document.getElementById('logoutModal');
+            if (e.target === logoutModal) {
+                closeLogoutModal();
+            }
+        });
+
+        // Send message on Enter key
+        document.getElementById('messageInput')?.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', initMemberDashboard);
+    </script>
+</body>
+</html>
